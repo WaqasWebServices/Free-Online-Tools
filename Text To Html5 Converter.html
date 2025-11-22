@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to HTML5 Converter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 8px;
+            padding: 8px 15px;
+        }
+        
+        textarea {
+            border-radius: 10px;
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .preview-area {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 20px;
+            height: 100%;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1055;
+        }
+        
+        .option-btn {
+            margin: 5px;
+        }
+        
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #6c757d;
+            padding: 20px;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section text-center">
+            <h1 class="display-4 fw-bold"><i class="fas fa-code me-3"></i>Text to HTML5 Converter</h1>
+            <p class="lead">Convert your text to high-quality HTML5 code for using on Blogger and WordPress</p>
+        </div>
+
+        <!-- Main Converter Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-edit me-2"></i>Text to HTML5 Converter
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="inputText" class="form-label fw-bold">Enter your text:</label>
+                            <textarea class="form-control" id="inputText" rows="10" placeholder="Type or paste your text here..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Formatting Options:</label>
+                            <div class="d-flex flex-wrap">
+                                <button class="btn btn-outline-secondary option-btn" data-tag="strong"><i class="fas fa-bold"></i> Bold</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="em"><i class="fas fa-italic"></i> Italic</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="u"><i class="fas fa-underline"></i> Underline</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="h1"><i class="fas fa-heading"></i> H1</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="h2"><i class="fas fa-heading"></i> H2</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="blockquote"><i class="fas fa-quote-right"></i> Quote</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="ul"><i class="fas fa-list-ul"></i> List</button>
+                                <button class="btn btn-outline-secondary option-btn" data-tag="a"><i class="fas fa-link"></i> Link</button>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <button id="convertBtn" class="btn btn-primary me-md-2"><i class="fas fa-sync-alt me-2"></i>Convert to HTML5</button>
+                            <button id="clearBtn" class="btn btn-outline-secondary"><i class="fas fa-broom me-2"></i>Clear All</button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="htmlOutput" class="form-label fw-bold">HTML5 Output:</label>
+                            <textarea class="form-control" id="htmlOutput" rows="10" readonly placeholder="Your HTML5 code will appear here..."></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <button id="copyBtn" class="btn btn-success me-md-2"><i class="fas fa-copy me-2"></i>Copy HTML</button>
+                            <button id="previewBtn" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#previewModal"><i class="fas fa-eye me-2"></i>Preview</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Modal -->
+        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="previewModalLabel"><i class="fas fa-eye me-2"></i>HTML Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="preview-area" id="livePreview">
+                            Preview will appear here after conversion...
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-blog"></i>
+                    </div>
+                    <h4>Blogger Ready</h4>
+                    <p>Generate clean HTML5 code that works perfectly with Blogger templates and editor.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fab fa-wordpress"></i>
+                    </div>
+                    <h4>WordPress Compatible</h4>
+                    <p>Create HTML that integrates seamlessly with WordPress posts and pages.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Responsive Design</h4>
+                    <p>Output code that looks great on all devices - desktop, tablet, and mobile.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i>How to Use This Tool
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-list-ol me-2 text-primary"></i>Step-by-Step Guide</h5>
+                        <ol class="mt-3">
+                            <li class="mb-2">Type or paste your text in the input area</li>
+                            <li class="mb-2">Use formatting buttons to style your text (optional)</li>
+                            <li class="mb-2">Click "Convert to HTML5" to generate the code</li>
+                            <li class="mb-2">Copy the HTML output or preview how it looks</li>
+                            <li class="mb-2">Paste the code into your Blogger or WordPress editor</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-lightbulb me-2 text-warning"></i>Pro Tips</h5>
+                        <ul class="mt-3">
+                            <li class="mb-2">Use <span class="highlight">Headings (H1, H2)</span> for better SEO</li>
+                            <li class="mb-2">Add <span class="highlight">links</span> to reference sources</li>
+                            <li class="mb-2">Use <span class="highlight">blockquotes</span> for important quotes</li>
+                            <li class="mb-2">Preview your HTML before using it</li>
+                            <li class="mb-2">The generated code is valid HTML5 and responsive</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Text to HTML5 Converter Tool &copy; 2025 | All Rights Reserved By AskQuora.com</p>
+        </footer>
+    </div>
+
+    <!-- Toast for notifications -->
+    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i><span id="toastMessage">HTML copied to clipboard!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const inputText = document.getElementById('inputText');
+            const htmlOutput = document.getElementById('htmlOutput');
+            const convertBtn = document.getElementById('convertBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const previewBtn = document.getElementById('previewBtn');
+            const livePreview = document.getElementById('livePreview');
+            const optionBtns = document.querySelectorAll('.option-btn');
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            const toastMessage = document.getElementById('toastMessage');
+
+            // Convert text to HTML
+            convertBtn.addEventListener('click', function() {
+                let text = inputText.value.trim();
+                
+                if (!text) {
+                    showToast('Please enter some text to convert', 'warning');
+                    return;
+                }
+                
+                // Convert line breaks to <br> tags
+                let html = text.replace(/\n/g, '<br>');
+                
+                // Wrap in paragraph tags if no other block elements
+                if (!html.match(/<(h[1-6]|p|div|blockquote|ul|ol)/i)) {
+                    html = '<p>' + html + '</p>';
+                }
+                
+                htmlOutput.value = html;
+                livePreview.innerHTML = html;
+                showToast('Text successfully converted to HTML5!');
+            });
+
+            // Clear all fields
+            clearBtn.addEventListener('click', function() {
+                inputText.value = '';
+                htmlOutput.value = '';
+                livePreview.innerHTML = 'Preview will appear here after conversion...';
+                showToast('All fields cleared');
+            });
+
+            // Copy HTML to clipboard
+            copyBtn.addEventListener('click', function() {
+                if (!htmlOutput.value) {
+                    showToast('No HTML code to copy', 'warning');
+                    return;
+                }
+                
+                htmlOutput.select();
+                htmlOutput.setSelectionRange(0, 99999); // For mobile devices
+                
+                try {
+                    navigator.clipboard.writeText(htmlOutput.value);
+                    showToast('HTML code copied to clipboard!');
+                } catch (err) {
+                    // Fallback for older browsers
+                    document.execCommand('copy');
+                    showToast('HTML code copied to clipboard!');
+                }
+            });
+
+            // Formatting options
+            optionBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tag = this.getAttribute('data-tag');
+                    const textarea = inputText;
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const selectedText = textarea.value.substring(start, end);
+                    
+                    let newText = '';
+                    
+                    switch(tag) {
+                        case 'strong':
+                            newText = '<strong>' + selectedText + '</strong>';
+                            break;
+                        case 'em':
+                            newText = '<em>' + selectedText + '</em>';
+                            break;
+                        case 'u':
+                            newText = '<u>' + selectedText + '</u>';
+                            break;
+                        case 'h1':
+                            newText = '<h1>' + selectedText + '</h1>';
+                            break;
+                        case 'h2':
+                            newText = '<h2>' + selectedText + '</h2>';
+                            break;
+                        case 'blockquote':
+                            newText = '<blockquote>' + selectedText + '</blockquote>';
+                            break;
+                        case 'ul':
+                            newText = '<ul>\n<li>' + selectedText.split('\n').join('</li>\n<li>') + '</li>\n</ul>';
+                            break;
+                        case 'a':
+                            const url = prompt('Enter URL:', 'https://');
+                            if (url) {
+                                newText = '<a href="' + url + '" target="_blank">' + selectedText + '</a>';
+                            } else {
+                                return; // User cancelled
+                            }
+                            break;
+                    }
+                    
+                    // Replace selected text with formatted text
+                    textarea.value = textarea.value.substring(0, start) + newText + textarea.value.substring(end);
+                    
+                    // Update preview if there's already HTML output
+                    if (htmlOutput.value) {
+                        convertBtn.click();
+                    }
+                });
+            });
+
+            // Show toast notification
+            function showToast(message, type = 'success') {
+                toastMessage.textContent = message;
+                const toastElement = document.getElementById('successToast');
+                
+                if (type === 'warning') {
+                    toastElement.classList.remove('bg-success');
+                    toastElement.classList.add('bg-warning');
+                } else {
+                    toastElement.classList.remove('bg-warning');
+                    toastElement.classList.add('bg-success');
+                }
+                
+                successToast.show();
+            }
+
+            // Auto-convert when typing (with debounce)
+            let typingTimer;
+            inputText.addEventListener('input', function() {
+                clearTimeout(typingTimer);
+                if (htmlOutput.value) {
+                    typingTimer = setTimeout(() => {
+                        convertBtn.click();
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

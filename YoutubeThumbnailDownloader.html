@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Thumbnail Downloader - Free 4K & HD Image Grabber</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Download YouTube thumbnails in 4K, 1080p, HD, and SD quality. Free, fast, and easy online tool to save YouTube video cover images instantly.">
+    <meta name="keywords" content="youtube thumbnail downloader, save youtube thumbnail, yt thumbnail grabber, 4k thumbnail downloader, youtube cover image, get youtube video image">
+    <meta name="author" content="YT Thumbnail Tools">
+    <meta property="og:title" content="YouTube Thumbnail Downloader - Free 4K & HD Image Grabber">
+    <meta property="og:description" content="Download high-quality YouTube thumbnails instantly. Supports 4K, HD, and standard formats.">
+    <meta property="og:type" content="website">
+    <meta name="robots" content="index, follow">
+
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%); }
+        .smooth-scroll { scroll-behavior: smooth; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 smooth-scroll flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo: Links to Home View -->
+                <a href="#" onclick="showPage('home'); return false;" class="flex-shrink-0 flex items-center gap-2 cursor-pointer decoration-0">
+                    <i class="fa-brands fa-youtube text-red-600 text-3xl"></i>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">Thumb<span class="text-red-600">Grabber</span></span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" onclick="showPage('home'); return false;" class="text-gray-600 hover:text-red-600 transition">Home</a>
+                    <a href="#how-to" onclick="showPage('home');" class="text-gray-600 hover:text-red-600 transition">How to Use</a>
+                    <a href="#features" onclick="showPage('home');" class="text-gray-600 hover:text-red-600 transition">Features</a>
+                    <a href="#contact" onclick="showPage('contact'); return false;" class="text-gray-600 hover:text-red-600 transition">Contact</a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-red-600 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t p-4">
+            <a href="#" onclick="showPage('home'); return false;" class="block py-2 text-gray-600">Home</a>
+            <a href="#how-to" onclick="showPage('home');" class="block py-2 text-gray-600">How to Use</a>
+            <a href="#features" onclick="showPage('home');" class="block py-2 text-gray-600">Features</a>
+            <a href="#contact" onclick="showPage('contact'); return false;" class="block py-2 text-gray-600">Contact</a>
+            <a href="#privacy" onclick="showPage('privacy'); return false;" class="block py-2 text-gray-600 text-sm mt-2 border-t pt-2">Privacy Policy</a>
+            <a href="#terms" onclick="showPage('terms'); return false;" class="block py-2 text-gray-600 text-sm">Terms of Service</a>
+        </div>
+    </nav>
+
+    <!-- PAGE: HOME (Main Tool) -->
+    <div id="page-home" class="page-section">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white pt-20 pb-24 px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">YouTube Thumbnail Downloader</h1>
+                <p class="text-lg md:text-xl text-red-100 mb-10">Download high-quality YouTube thumbnails/images in 4K, HD, and 1080p for free.</p>
+                
+                <div class="bg-white p-2 rounded-lg shadow-xl max-w-2xl mx-auto flex flex-col md:flex-row gap-2">
+                    <div class="flex-grow relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-link text-gray-400"></i>
+                        </div>
+                        <input type="text" id="videoUrl" 
+                            class="w-full pl-10 pr-4 py-3 rounded-md text-gray-900 border-none focus:ring-2 focus:ring-red-500 focus:outline-none"
+                            placeholder="Paste YouTube Video URL here...">
+                    </div>
+                    <button onclick="getThumbnail()" 
+                        class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-8 rounded-md transition duration-300 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Get Thumbnail
+                    </button>
+                </div>
+                <p id="error-msg" class="text-yellow-200 mt-3 hidden text-sm font-medium"><i class="fa-solid fa-triangle-exclamation"></i> Invalid YouTube URL. Please try again.</p>
+            </div>
+        </section>
+
+        <!-- Results Section (Hidden by default) -->
+        <section id="result-section" class="hidden max-w-7xl mx-auto px-4 -mt-16 mb-20 relative z-10 fade-in">
+            <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8">
+                <div class="text-center mb-8 border-b pb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Video Thumbnails Found</h2>
+                    <p class="text-gray-500 text-sm mt-1">Right-click the image and select "Save Image As" or use the Download button.</p>
+                </div>
+
+                <!-- Grid for Thumbnails -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- HD (Max Res) -->
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-lg transition">
+                        <div class="relative group">
+                            <img id="thumb-max" src="" alt="HD Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                            <span class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">HD (1280x720)</span>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                            <a id="btn-dl-max" href="#" target="_blank" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded text-center transition font-medium">
+                                <i class="fa-solid fa-image mr-2"></i> Download HD
+                            </a>
+                            <button onclick="copyLink('thumb-max')" class="sm:w-auto px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- SD (Standard) -->
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-lg transition">
+                        <div class="relative group">
+                            <img id="thumb-sd" src="" alt="SD Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                            <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">SD (640x480)</span>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                            <a id="btn-dl-sd" href="#" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded text-center transition font-medium">
+                                <i class="fa-solid fa-image mr-2"></i> Download SD
+                            </a>
+                            <button onclick="copyLink('thumb-sd')" class="sm:w-auto px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- HQ (High Quality) -->
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-lg transition">
+                        <div class="relative group">
+                            <img id="thumb-hq" src="" alt="High Quality Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                            <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">HQ (480x360)</span>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                            <a id="btn-dl-hq" href="#" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded text-center transition font-medium">
+                                <i class="fa-solid fa-image mr-2"></i> Download HQ
+                            </a>
+                            <button onclick="copyLink('thumb-hq')" class="sm:w-auto px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- MQ (Medium Quality) -->
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-lg transition">
+                        <div class="relative group">
+                            <img id="thumb-mq" src="" alt="Medium Quality Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                            <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">MQ (320x180)</span>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                            <a id="btn-dl-mq" href="#" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded text-center transition font-medium">
+                                <i class="fa-solid fa-image mr-2"></i> Download MQ
+                            </a>
+                            <button onclick="copyLink('thumb-mq')" class="sm:w-auto px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Content Section -->
+        <main class="flex-grow">
+            <!-- How it works -->
+            <section id="how-to" class="py-16 px-4 max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">How to Download YouTube Thumbnails?</h2>
+                    <p class="text-gray-600 mt-2">Follow these 3 simple steps to save any YouTube cover image.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+                        <h3 class="text-xl font-semibold mb-2">Copy URL</h3>
+                        <p class="text-gray-600">Go to YouTube, find the video you like, and copy its link from the address bar or share button.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+                        <h3 class="text-xl font-semibold mb-2">Paste Link</h3>
+                        <p class="text-gray-600">Paste the video URL into the input box above on this page and click the "Get Thumbnail" button.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+                        <h3 class="text-xl font-semibold mb-2">Download</h3>
+                        <p class="text-gray-600">Choose your preferred quality (HD, SD, or HQ) and click download to save the image to your device.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEO Article Section (New Content) -->
+            <section class="py-16 px-4 max-w-7xl mx-auto bg-white border-t border-gray-100">
+                <article class="prose lg:prose-xl mx-auto text-gray-600 max-w-4xl">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">The Best YouTube Thumbnail Downloader Online</h2>
+                    <p class="mb-4 leading-relaxed">
+                        Are you looking for a reliable <strong>YouTube Thumbnail Downloader</strong> to save high-quality images from YouTube videos? 
+                        Our tool is the perfect solution for content creators, marketers, and designers who need to extract the cover image of any YouTube video instantly.
+                    </p>
+                    <p class="mb-8 leading-relaxed">
+                        Whether you need a thumbnail for a blog post, a social media share, or just for inspiration, our <strong>YT thumbnail grabber</strong> 
+                        allows you to download images in various resolutions, including <span class="text-red-600 font-semibold">4K, HD (1080p), HQ, and SD</span>.
+                    </p>
+
+                    <h3 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Why use this YouTube Thumbnail Downloader?</h3>
+                    <p class="mb-6 leading-relaxed">
+                        A captivating thumbnail is crucial for high click-through rates (CTR). By using a <em>YouTube Thumbnail Downloader</em>, you can analyze 
+                        competitor designs, archive your own video assets, or reuse thumbnails for cross-platform promotion on Instagram, Pinterest, or Twitter.
+                    </p>
+                    
+                    <h3 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Supported Resolutions & Formats</h3>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200 mt-4 mb-8">
+                        <table class="min-w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 font-bold text-gray-700">Resolution Name</th>
+                                    <th scope="col" class="px-6 py-4 font-bold text-gray-700">Size (Pixels)</th>
+                                    <th scope="col" class="px-6 py-4 font-bold text-gray-700">Best For</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-red-600">Max Resolution (4K)</td>
+                                    <td class="px-6 py-4">1920x1080 / 1280x720</td>
+                                    <td class="px-6 py-4">Large displays, Desktop wallpapers</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-800">Standard Definition (SD)</td>
+                                    <td class="px-6 py-4">640x480</td>
+                                    <td class="px-6 py-4">Blog posts, Social Media posts</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-800">High Quality (HQ)</td>
+                                    <td class="px-6 py-4">480x360</td>
+                                    <td class="px-6 py-4">Mobile apps, Low bandwidth</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-800">Medium Quality (MQ)</td>
+                                    <td class="px-6 py-4">320x180</td>
+                                    <td class="px-6 py-4">Small previews, Icons</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <!-- FAQ Section for SEO -->
+            <section id="faq" class="py-16 px-4 max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 text-center mb-10">Frequently Asked Questions</h2>
+                
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 font-semibold text-gray-800 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+                            Is it legal to download YouTube thumbnails?
+                            <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div class="hidden px-6 pb-4 text-gray-600 border-t border-gray-100 pt-4">
+                            Yes, you can download thumbnails for personal use or inspiration. However, please respect the copyright of the original content creator if you plan to reuse the image commercially.
+                        </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 font-semibold text-gray-800 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+                            Does this tool support YouTube Shorts?
+                            <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div class="hidden px-6 pb-4 text-gray-600 border-t border-gray-100 pt-4">
+                            Absolutely! Our tool supports regular videos, YouTube Shorts, and Live stream URLs. Just paste the link and get the image.
+                        </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 font-semibold text-gray-800 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+                            What is the size of a YouTube Thumbnail?
+                            <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div class="hidden px-6 pb-4 text-gray-600 border-t border-gray-100 pt-4">
+                            The standard YouTube thumbnail size is 1280 x 720 pixels (HD). However, we also provide other sizes like 640x480, 480x360, and 320x180.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PAGE: PRIVACY POLICY -->
+    <div id="page-privacy" class="page-section hidden max-w-4xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
+        <div class="prose max-w-none text-gray-600">
+            <p class="mb-4">At ThumbGrabber, accessible from our website, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by ThumbGrabber and how we use it.</p>
+            
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Log Files</h3>
+            <p class="mb-4">ThumbGrabber follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics. The information collected by log files include internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks.</p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Cookies and Web Beacons</h3>
+            <p class="mb-4">Like any other website, ThumbGrabber uses 'cookies'. These cookies are used to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited.</p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Google DoubleClick DART Cookie</h3>
+            <p class="mb-4">Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL – <a href="https://policies.google.com/technologies/ads" class="text-blue-600 hover:underline">https://policies.google.com/technologies/ads</a></p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">Third Party Privacy Policies</h3>
+            <p class="mb-4">ThumbGrabber's Privacy Policy does not apply to other advertisers or websites. Thus, we are advising you to consult the respective Privacy Policies of these third-party ad servers for more detailed information.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: TERMS OF SERVICE -->
+    <div id="page-terms" class="page-section hidden max-w-4xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Terms of Service</h1>
+        <div class="prose max-w-none text-gray-600">
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">1. Terms</h3>
+            <p class="mb-4">By accessing this Website, you are agreeing to be bound by these Website Terms and Conditions of Use and agree that you are responsible for the agreement with any applicable local laws. If you disagree with any of these terms, you are prohibited from accessing this site.</p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">2. Use License</h3>
+            <p class="mb-4">Permission is granted to temporarily download one copy of the materials on ThumbGrabber's Website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title.</p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">3. Disclaimer</h3>
+            <p class="mb-4">All the materials on ThumbGrabber’s Website are provided "as is". ThumbGrabber makes no warranties, may it be expressed or implied, therefore negates all other warranties. Furthermore, ThumbGrabber does not make any representations concerning the accuracy or reliability of the use of the materials on its Website or otherwise relating to such materials or any sites linked to this Website.</p>
+
+            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-3">4. Limitations</h3>
+            <p class="mb-4">ThumbGrabber or its suppliers will not be hold accountable for any damages that will arise with the use or inability to use the materials on ThumbGrabber’s Website, even if ThumbGrabber or an authorize representative of this Website has been notified, orally or written, of the possibility of such damage.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: CONTACT -->
+    <div id="page-contact" class="page-section hidden max-w-4xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Contact Us</h1>
+        <div class="bg-white p-4 md:p-8 rounded-xl shadow-lg border border-gray-100 max-w-3xl mx-auto">
+            <p class="text-gray-600 mb-6 text-center">Have questions, suggestions, or want to report a bug? Fill out the form below or email us directly.</p>
+            
+            <!-- Google Form Container -->
+            <div class="w-full bg-gray-50 rounded-lg overflow-hidden mb-8 border border-gray-200">
+                <iframe 
+                    src="https://forms.gle/GXaWqpiqUbVU9BtP8" 
+                    width="100%" 
+                    height="800" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0"
+                    class="w-full"
+                    title="Contact Form">
+                    Loading…
+                </iframe>
+            </div>
+
+            <div class="text-center border-t border-gray-100 pt-8">
+                <div class="inline-block p-3 rounded-full bg-red-50 text-red-600 mb-3">
+                    <i class="fa-solid fa-envelope text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900">Prefer Email?</h3>
+                <a href="mailto:support@askquora.com" class="text-red-600 hover:text-red-700 font-medium block transition">support@askquora.com</a>
+                <p class="text-sm text-gray-400 mt-2">We usually respond within 24-48 hours.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 border-t border-gray-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <div class="mb-4 md:mb-0 text-center md:text-left">
+                    <a href="#" onclick="showPage('home'); return false;" class="font-bold text-2xl tracking-tight cursor-pointer">Thumb<span class="text-red-600">Grabber</span></a>
+                    <p class="text-gray-400 text-sm mt-2 max-w-xs">The fastest way to download High Quality YouTube Thumbnails.</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="#" onclick="showPage('home'); return false;" class="text-gray-400 hover:text-white transition">Home</a>
+                    <a href="#privacy" onclick="showPage('privacy'); return false;" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                    <a href="#terms" onclick="showPage('terms'); return false;" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                    <a href="#contact" onclick="showPage('contact'); return false;" class="text-gray-400 hover:text-white transition">Contact</a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2025 ThumbGrabber. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Toggle Mobile Menu
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // PAGE ROUTING LOGIC
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show specific page
+            if(pageId === 'home') {
+                document.getElementById('page-home').classList.remove('hidden');
+                // Note: removed history.pushState to prevent SecurityError in sandboxed/preview environments.
+                // Navigation now relies solely on DOM manipulation.
+                window.scrollTo(0,0);
+            } else {
+                const target = document.getElementById('page-' + pageId);
+                if(target) {
+                    target.classList.remove('hidden');
+                    window.scrollTo(0,0);
+                }
+            }
+            
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // Handle Hash Change (Browser Back/Forward buttons)
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.substring(1); // remove #
+            if(hash === 'privacy') showPage('privacy');
+            else if(hash === 'terms') showPage('terms');
+            else if(hash === 'contact') showPage('contact');
+            else showPage('home');
+        });
+
+        // Initial Load Check
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.substring(1);
+            if(hash === 'privacy' || hash === 'terms' || hash === 'contact') {
+                showPage(hash);
+            }
+        });
+
+        // Toggle FAQ
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            content.classList.toggle('hidden');
+            icon.classList.toggle('fa-chevron-up');
+            icon.classList.toggle('fa-chevron-down');
+        }
+
+        // Copy Link Functionality
+        function copyLink(imgId) {
+            const img = document.getElementById(imgId);
+            if (!img || !img.src) return;
+
+            const tempInput = document.createElement('input');
+            tempInput.value = img.src;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                alert("Image URL Copied to Clipboard!");
+            } catch (err) {
+                alert("Failed to copy link. Please manually copy the URL.");
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+
+        // Extract Video ID
+        function extractVideoID(url) {
+            if(!url) return false;
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length == 11) ? match[7] : false;
+        }
+
+        // Main Logic
+        function getThumbnail() {
+            const inputUrl = document.getElementById('videoUrl').value;
+            const errorMsg = document.getElementById('error-msg');
+            const resultSection = document.getElementById('result-section');
+            
+            const videoId = extractVideoID(inputUrl);
+
+            if (!videoId) {
+                errorMsg.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            resultSection.classList.remove('hidden');
+
+            const maxRes = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            const sdRes = `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
+            const hqRes = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            const mqRes = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
+            document.getElementById('thumb-max').src = maxRes;
+            document.getElementById('thumb-sd').src = sdRes;
+            document.getElementById('thumb-hq').src = hqRes;
+            document.getElementById('thumb-mq').src = mqRes;
+
+            document.getElementById('btn-dl-max').href = maxRes;
+            document.getElementById('btn-dl-sd').href = sdRes;
+            document.getElementById('btn-dl-hq').href = hqRes;
+            document.getElementById('btn-dl-mq').href = mqRes;
+            
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            document.getElementById('thumb-max').onerror = function() {
+                this.src = hqRes; 
+            };
+        }
+
+        document.getElementById('videoUrl').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                getThumbnail();
+            }
+        });
+    </script>
+</body>
+</html>

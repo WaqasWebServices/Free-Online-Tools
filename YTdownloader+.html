@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Tool - Thumbnails, Tags, Logos & Metadata</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="All-in-One YouTube Tool: Download Thumbnails (4K), Extract Tags, Save Channel Logos, and Copy Video Descriptions. Free online YouTube grabber.">
+    <meta name="keywords" content="youtube thumbnail downloader, youtube tags extractor, youtube logo downloader, video metadata viewer, yt tools, 4k thumbnail">
+    <meta name="author" content="YT Thumbnail Tools">
+    <meta property="og:title" content="YouTube Tool - Thumbnails, Tags, Logos & Metadata">
+    <meta property="og:description" content="Download high-quality YouTube thumbnails, extract tags, and save channel logos instantly.">
+    <meta property="og:type" content="website">
+    <meta name="robots" content="index, follow">
+
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%); }
+        .smooth-scroll { scroll-behavior: smooth; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Tab Active State */
+        .tab-active { border-bottom: 2px solid #FF0000; color: #FF0000; background-color: #FEF2F2; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 smooth-scroll flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo: Links to Home View -->
+                <a href="#" onclick="showPage('home'); return false;" class="flex-shrink-0 flex items-center gap-2 cursor-pointer decoration-0">
+                    <i class="fa-brands fa-youtube text-red-600 text-3xl"></i>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">Thumb<span class="text-red-600">Grabber</span>+</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" onclick="showPage('home'); return false;" class="text-gray-600 hover:text-red-600 transition">Tools</a>
+                    <a href="#how-to" onclick="showPage('home');" class="text-gray-600 hover:text-red-600 transition">How to Use</a>
+                    <a href="#features" onclick="showPage('home');" class="text-gray-600 hover:text-red-600 transition">Features</a>
+                    <a href="#contact" onclick="showPage('contact'); return false;" class="text-gray-600 hover:text-red-600 transition">Contact</a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-red-600 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t p-4">
+            <a href="#" onclick="showPage('home'); return false;" class="block py-2 text-gray-600">Tools</a>
+            <a href="#how-to" onclick="showPage('home');" class="block py-2 text-gray-600">How to Use</a>
+            <a href="#features" onclick="showPage('home');" class="block py-2 text-gray-600">Features</a>
+            <a href="#contact" onclick="showPage('contact'); return false;" class="block py-2 text-gray-600">Contact</a>
+            <a href="#privacy" onclick="showPage('privacy'); return false;" class="block py-2 text-gray-600 text-sm mt-2 border-t pt-2">Privacy Policy</a>
+            <a href="#terms" onclick="showPage('terms'); return false;" class="block py-2 text-gray-600 text-sm">Terms of Service</a>
+        </div>
+    </nav>
+
+    <!-- PAGE: HOME (Main Tool) -->
+    <div id="page-home" class="page-section">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white pt-16 pb-20 px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-3xl md:text-5xl font-bold mb-4">YouTube All-in-One Tool</h1>
+                <p class="text-base md:text-xl text-red-100 mb-8">Download Thumbnails, Extract Tags, Get Channel Logos & Metadata.</p>
+                
+                <div class="bg-white p-2 rounded-lg shadow-xl max-w-2xl mx-auto flex flex-col md:flex-row gap-2 relative z-10">
+                    <div class="flex-grow relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-link text-gray-400"></i>
+                        </div>
+                        <input type="text" id="videoUrl" 
+                            class="w-full pl-10 pr-4 py-3 rounded-md text-gray-900 border-none focus:ring-2 focus:ring-red-500 focus:outline-none"
+                            placeholder="Paste YouTube Video URL here...">
+                    </div>
+                    <button onclick="analyzeVideo()" id="analyze-btn"
+                        class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-8 rounded-md transition duration-300 flex items-center justify-center gap-2">
+                        <span id="btn-text"><i class="fa-solid fa-rocket"></i> Analyze</span>
+                        <span id="btn-loader" class="hidden"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+                    </button>
+                </div>
+                <p id="error-msg" class="text-yellow-200 mt-3 hidden text-sm font-medium"><i class="fa-solid fa-triangle-exclamation"></i> <span id="error-text">Invalid URL or Network Error.</span></p>
+            </div>
+        </section>
+
+        <!-- Tool Interface (Hidden by default) -->
+        <section id="result-section" class="hidden max-w-7xl mx-auto px-4 -mt-10 mb-20 relative z-10 fade-in">
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden min-h-[500px]">
+                
+                <!-- Tool Tabs -->
+                <div class="flex flex-wrap border-b bg-gray-50">
+                    <button onclick="switchTab('thumbnails')" id="tab-thumbnails" class="flex-1 py-4 px-6 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none tab-active">
+                        <i class="fa-regular fa-image mr-2"></i> Thumbnails
+                    </button>
+                    <button onclick="switchTab('tags')" id="tab-tags" class="flex-1 py-4 px-6 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <i class="fa-solid fa-tags mr-2"></i> Tags
+                    </button>
+                    <button onclick="switchTab('logo')" id="tab-logo" class="flex-1 py-4 px-6 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <i class="fa-solid fa-user-circle mr-2"></i> Logo
+                    </button>
+                    <button onclick="switchTab('metadata')" id="tab-metadata" class="flex-1 py-4 px-6 text-sm font-medium text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <i class="fa-solid fa-circle-info mr-2"></i> Details
+                    </button>
+                </div>
+
+                <!-- Content Area -->
+                <div class="p-6 md:p-8">
+                    
+                    <!-- TAB: Thumbnails -->
+                    <div id="content-thumbnails" class="tab-content block">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">Video Thumbnails</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- HD (Max Res) -->
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div class="relative group">
+                                    <img id="thumb-max" src="" alt="HD Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                                    <span class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">HD (1280x720)</span>
+                                </div>
+                                <div class="mt-4 flex gap-3">
+                                    <a id="btn-dl-max" href="#" target="_blank" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded text-center text-sm font-medium">Download HD</a>
+                                </div>
+                            </div>
+                            <!-- SD (Standard) -->
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div class="relative group">
+                                    <img id="thumb-sd" src="" alt="SD Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                                    <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">SD (640x480)</span>
+                                </div>
+                                <div class="mt-4 flex gap-3">
+                                    <a id="btn-dl-sd" href="#" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded text-center text-sm font-medium">Download SD</a>
+                                </div>
+                            </div>
+                            <!-- HQ (High Quality) -->
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div class="relative group">
+                                    <img id="thumb-hq" src="" alt="HQ Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                                    <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">HQ (480x360)</span>
+                                </div>
+                                <div class="mt-4 flex gap-3">
+                                    <a id="btn-dl-hq" href="#" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded text-center text-sm font-medium">Download HQ</a>
+                                </div>
+                            </div>
+                            <!-- MQ (Medium Quality) -->
+                            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div class="relative group">
+                                    <img id="thumb-mq" src="" alt="MQ Youtube Thumbnail" class="w-full rounded-md shadow-sm">
+                                    <span class="absolute top-2 right-2 bg-gray-700 text-white text-xs font-bold px-2 py-1 rounded">MQ (320x180)</span>
+                                </div>
+                                <div class="mt-4 flex gap-3">
+                                    <a id="btn-dl-mq" href="#" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded text-center text-sm font-medium">Download MQ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Tags -->
+                    <div id="content-tags" class="tab-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-gray-800">Extracted Video Tags</h2>
+                            <button onclick="copyAllTags()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm font-medium transition">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy All
+                            </button>
+                        </div>
+                        <div id="tags-container" class="flex flex-wrap gap-2 p-6 bg-gray-50 rounded-lg border border-gray-200 min-h-[100px]">
+                            <span class="text-gray-400 italic text-sm">Loading tags or no tags found...</span>
+                        </div>
+                        <textarea id="hidden-tags-text" class="hidden"></textarea>
+                        <p class="mt-4 text-xs text-gray-400"><i class="fa-solid fa-info-circle"></i> Note: Tags are extracted directly from the page metadata.</p>
+                    </div>
+
+                    <!-- TAB: Logo -->
+                    <div id="content-logo" class="tab-content hidden">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">Channel Logo</h2>
+                        <div class="flex flex-col items-center justify-center p-8 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="relative w-32 h-32 md:w-48 md:h-48 mb-6">
+                                <img id="channel-logo-img" src="https://via.placeholder.com/200?text=Loading" class="w-full h-full rounded-full border-4 border-white shadow-md object-cover">
+                            </div>
+                            <h3 id="channel-name-display" class="text-lg font-bold text-gray-800 mb-4">Channel Name</h3>
+                            <a id="btn-dl-logo" href="#" target="_blank" class="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded-full text-sm font-medium transition shadow-sm">
+                                <i class="fa-solid fa-download mr-2"></i> Download Logo
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- TAB: Metadata/Description -->
+                    <div id="content-metadata" class="tab-content hidden">
+                        <h2 class="text-xl font-bold text-gray-800 mb-6">Video Details & Description</h2>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Video Title</label>
+                            <div class="flex">
+                                <input type="text" id="meta-title" readonly class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-l-lg p-2.5 focus:outline-none">
+                                <button onclick="copyInput('meta-title')" class="bg-gray-200 hover:bg-gray-300 border border-gray-300 border-l-0 rounded-r-lg px-4 text-gray-600">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <div class="relative">
+                                <textarea id="meta-desc" rows="10" readonly class="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 p-2.5 focus:outline-none"></textarea>
+                                <button onclick="copyInput('meta-desc')" class="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-gray-100 text-gray-600 px-3 py-1 rounded text-xs border border-gray-200">
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Content Section -->
+        <main class="flex-grow">
+            <!-- How it works -->
+            <section id="how-to" class="py-16 px-4 max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">How to use this Tool?</h2>
+                    <p class="text-gray-600 mt-2">One URL, multiple possibilities.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold"><i class="fa-solid fa-link"></i></div>
+                        <h3 class="font-semibold mb-2">1. Paste Link</h3>
+                        <p class="text-sm text-gray-600">Enter the YouTube Video URL above.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold"><i class="fa-regular fa-image"></i></div>
+                        <h3 class="font-semibold mb-2">2. Get Thumbnails</h3>
+                        <p class="text-sm text-gray-600">Download HD, SD, or HQ images instantly.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold"><i class="fa-solid fa-tags"></i></div>
+                        <h3 class="font-semibold mb-2">3. Extract Tags</h3>
+                        <p class="text-sm text-gray-600">See hidden keywords used in the video.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold"><i class="fa-solid fa-user"></i></div>
+                        <h3 class="font-semibold mb-2">4. Grab Logo</h3>
+                        <p class="text-sm text-gray-600">Get the channel's profile picture.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEO Article Section -->
+            <section class="py-16 px-4 max-w-7xl mx-auto bg-white border-t border-gray-100">
+                <article class="prose lg:prose-xl mx-auto text-gray-600 max-w-4xl">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Free YouTube Thumbnail & Metadata Downloader</h2>
+                    <p class="mb-4 leading-relaxed">
+                        Enhance your YouTube strategy with our <strong>All-in-One YouTube Tool</strong>. Beyond just being a <em>YouTube Thumbnail Downloader</em>, 
+                        this platform allows you to extract hidden <strong>Tags</strong>, retrieve <strong>Channel Logos</strong>, and view video metadata efficiently.
+                    </p>
+
+                    <h3 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Why Extract YouTube Tags?</h3>
+                    <p class="mb-6 leading-relaxed">
+                        YouTube tags are hidden keywords that creators use to help the algorithm understand their content. By using our <strong>Tags Extractor</strong>, 
+                        you can analyze what keywords top-ranking videos are using and optimize your own content strategy.
+                    </p>
+                    
+                    <h3 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Supported Features</h3>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200 mt-4 mb-8">
+                        <table class="min-w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 font-bold text-gray-700">Feature</th>
+                                    <th scope="col" class="px-6 py-4 font-bold text-gray-700">Description</th>
+                                    <th scope="col" class="px-6 py-4 font-bold text-gray-700">Format</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-red-600">Thumbnail Grabber</td>
+                                    <td class="px-6 py-4">Save video covers in 4K, HD, SD</td>
+                                    <td class="px-6 py-4">JPG</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-800">Tags Extractor</td>
+                                    <td class="px-6 py-4">View and copy hidden video keywords</td>
+                                    <td class="px-6 py-4">Text / Clipboard</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 font-medium text-gray-800">Logo Downloader</td>
+                                    <td class="px-6 py-4">Get high-res channel profile picture</td>
+                                    <td class="px-6 py-4">JPG / PNG</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <!-- FAQ Section -->
+            <section id="faq" class="py-16 px-4 max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 text-center mb-10">Frequently Asked Questions</h2>
+                
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 font-semibold text-gray-800 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+                            How does the Tags Extractor work?
+                            <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div class="hidden px-6 pb-4 text-gray-600 border-t border-gray-100 pt-4">
+                            Our tool scans the public metadata of the YouTube video page to find the keywords (tags) associated with the video, which are usually hidden from the standard view.
+                        </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg bg-white overflow-hidden">
+                        <button class="w-full text-left px-6 py-4 font-semibold text-gray-800 flex justify-between items-center focus:outline-none" onclick="toggleFaq(this)">
+                            Can I download the Channel Logo?
+                            <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div class="hidden px-6 pb-4 text-gray-600 border-t border-gray-100 pt-4">
+                            Yes! Just paste the video URL, go to the "Logo" tab, and you will see the channel's profile picture available for download in high quality.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PRIVACY, TERMS, CONTACT PAGES (Same as before) -->
+    <!-- PAGE: PRIVACY POLICY -->
+    <div id="page-privacy" class="page-section hidden max-w-4xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Privacy Policy</h1>
+        <div class="prose max-w-none text-gray-600">
+            <p class="mb-4">At ThumbGrabber, accessible from our website, one of our main priorities is the privacy of our visitors...</p>
+            <p>We do not store any video data you analyze. All processing is done in your browser or via public proxy for data retrieval.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: TERMS OF SERVICE -->
+    <div id="page-terms" class="page-section hidden max-w-4xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">Terms of Service</h1>
+        <div class="prose max-w-none text-gray-600">
+            <p>By using this tool, you agree not to infringe on any copyright. Thumbnails and Logos are property of their respective creators.</p>
+        </div>
+    </div>
+
+    <!-- PAGE: CONTACT -->
+    <div id="page-contact" class="page-section hidden max-w-4xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Contact Us</h1>
+        <div class="bg-white p-4 md:p-8 rounded-xl shadow-lg border border-gray-100 max-w-3xl mx-auto">
+            <p class="text-gray-600 mb-6 text-center">Have questions? Fill out the form below.</p>
+            <div class="w-full bg-gray-50 rounded-lg overflow-hidden mb-8 border border-gray-200">
+                <!-- Using placeholder for visual completeness -->
+                <iframe src="https://forms.gle/GXaWqpiqUbVU9BtP8" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0" class="w-full">Loading…</iframe>
+            </div>
+            <div class="text-center border-t border-gray-100 pt-8">
+                <a href="mailto:support@askquora.com" class="text-red-600 hover:text-red-700 font-medium block transition">support@askquora.com</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 border-t border-gray-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <div class="mb-4 md:mb-0 text-center md:text-left">
+                    <a href="#" onclick="showPage('home'); return false;" class="font-bold text-2xl tracking-tight cursor-pointer">Thumb<span class="text-red-600">Grabber</span>+</a>
+                </div>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="#" onclick="showPage('home'); return false;" class="text-gray-400 hover:text-white transition">Tools</a>
+                    <a href="#privacy" onclick="showPage('privacy'); return false;" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                    <a href="#terms" onclick="showPage('terms'); return false;" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                    <a href="#contact" onclick="showPage('contact'); return false;" class="text-gray-400 hover:text-white transition">Contact</a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2025 ThumbGrabber. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Navigation Logic ---
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(section => section.classList.add('hidden'));
+            if(pageId === 'home') {
+                document.getElementById('page-home').classList.remove('hidden');
+            } else {
+                const target = document.getElementById('page-' + pageId);
+                if(target) target.classList.remove('hidden');
+            }
+            document.getElementById('mobile-menu').classList.add('hidden');
+            window.scrollTo(0,0);
+        }
+
+        // --- Tab Logic ---
+        function switchTab(tabId) {
+            // Reset Tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-active').forEach(el => {
+                el.classList.remove('tab-active');
+                el.classList.remove('bg-red-50');
+            });
+
+            // Activate Target
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.classList.add('tab-active');
+        }
+
+        // --- Core Logic ---
+        
+        function extractVideoID(url) {
+            if(!url) return false;
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length == 11) ? match[7] : false;
+        }
+
+        /**
+         * Robust Proxy Fetcher
+         * Tries multiple proxies to ensure data is retrieved even if one is blocked/down.
+         */
+        async function fetchWithProxy(targetUrl) {
+            // Strategy 1: AllOrigins (JSON response)
+            // Generally fast and returns content in a 'contents' field
+            try {
+                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if(data.contents) return data.contents;
+                }
+            } catch (e) {
+                console.warn("Primary proxy (AllOrigins) failed, switching to backup...", e);
+            }
+
+            // Strategy 2: CorsProxy.io (Raw Text response)
+            // Backup if the first one fails
+            try {
+                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+                if (response.ok) {
+                    return await response.text();
+                }
+            } catch (e) {
+                console.error("Backup proxy failed", e);
+            }
+            
+            throw new Error("Unable to fetch data from proxies. Please try again later.");
+        }
+
+        async function analyzeVideo() {
+            const inputUrl = document.getElementById('videoUrl').value;
+            const errorMsg = document.getElementById('error-msg');
+            const errorText = document.getElementById('error-text');
+            const resultSection = document.getElementById('result-section');
+            const btnText = document.getElementById('btn-text');
+            const btnLoader = document.getElementById('btn-loader');
+            
+            const videoId = extractVideoID(inputUrl);
+
+            if (!videoId) {
+                errorText.innerText = "Invalid URL. Please paste a valid YouTube link.";
+                errorMsg.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                return;
+            }
+
+            // Start Loading
+            errorMsg.classList.add('hidden');
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+
+            try {
+                // 1. Process Thumbnails (Synchronous)
+                const maxRes = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                const sdRes = `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
+                const hqRes = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                const mqRes = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
+                document.getElementById('thumb-max').src = maxRes;
+                document.getElementById('thumb-sd').src = sdRes;
+                document.getElementById('thumb-hq').src = hqRes;
+                document.getElementById('thumb-mq').src = mqRes;
+
+                document.getElementById('btn-dl-max').href = maxRes;
+                document.getElementById('btn-dl-sd').href = sdRes;
+                document.getElementById('btn-dl-hq').href = hqRes;
+                document.getElementById('btn-dl-mq').href = mqRes;
+                
+                // Fallback for MaxRes
+                document.getElementById('thumb-max').onerror = function() { this.src = hqRes; };
+
+                // 2. Fetch Metadata, Tags, Logo via Proxy
+                const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                
+                // Use robust fetch helper
+                const htmlContent = await fetchWithProxy(ytUrl);
+                
+                if (htmlContent) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlContent, 'text/html');
+
+                    // A. Extract Tags
+                    const keywordsMeta = doc.querySelector('meta[name="keywords"]');
+                    const tagsContainer = document.getElementById('tags-container');
+                    const hiddenTagsText = document.getElementById('hidden-tags-text');
+                    tagsContainer.innerHTML = '';
+                    
+                    if (keywordsMeta && keywordsMeta.content) {
+                        const tags = keywordsMeta.content.split(',');
+                        hiddenTagsText.value = keywordsMeta.content; // For copy
+                        tags.forEach(tag => {
+                            const span = document.createElement('span');
+                            span.className = 'bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm';
+                            span.innerText = tag.trim();
+                            tagsContainer.appendChild(span);
+                        });
+                    } else {
+                        tagsContainer.innerHTML = '<span class="text-gray-400">No tags found for this video.</span>';
+                        hiddenTagsText.value = '';
+                    }
+
+                    // B. Extract Metadata (Title & Description)
+                    // Note: YouTube HTML is messy. We try OpenGraph tags first.
+                    const title = doc.querySelector('meta[property="og:title"]')?.content || "Title not found";
+                    const desc = doc.querySelector('meta[property="og:description"]')?.content || "Description not found";
+                    
+                    document.getElementById('meta-title').value = title;
+                    document.getElementById('meta-desc').value = desc;
+
+                    // C. Extract Channel Info (Logo)
+                    // Let's try NoEmbed for Author Name stability
+                    try {
+                        const noembedReq = await fetch(`https://noembed.com/embed?url=${ytUrl}`);
+                        const noembedData = await noembedReq.json();
+                        if(noembedData.author_name) {
+                            document.getElementById('channel-name-display').innerText = noembedData.author_name;
+                        }
+                    } catch(e) { console.log('Noembed fail', e); }
+
+                    // Logo Logic: Look for "og:image" on channel page
+                    // We attempt to find the channel URL from the scraped HTML
+                    const channelLink = doc.querySelector('link[itemprop="url"]')?.href || doc.querySelector('a[href*="/channel/"]')?.href;
+                    
+                    if (channelLink) {
+                        fetchChannelLogo(channelLink); 
+                    } else {
+                        document.getElementById('channel-logo-img').src = "https://via.placeholder.com/200?text=No+Logo+Found";
+                    }
+
+                }
+
+                // Show Results
+                resultSection.classList.remove('hidden');
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (err) {
+                console.error(err);
+                errorText.innerText = "Error fetching extended data (Tags/Logo). Thumbnails are still available below.";
+                errorMsg.classList.remove('hidden');
+                // Even if proxy fails, show thumbnails section as it is independent
+                resultSection.classList.remove('hidden');
+            } finally {
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+        }
+
+        async function fetchChannelLogo(channelUrl) {
+            try {
+                // Ensure URL is absolute
+                if(!channelUrl.startsWith('http')) channelUrl = 'https://www.youtube.com' + channelUrl;
+                
+                // Reuse robust proxy helper
+                const htmlContent = await fetchWithProxy(channelUrl);
+                
+                if (htmlContent) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlContent, 'text/html');
+                    // Channel pages usually have og:image as the avatar
+                    const logoUrl = doc.querySelector('meta[property="og:image"]')?.content;
+                    if(logoUrl) {
+                        document.getElementById('channel-logo-img').src = logoUrl;
+                        document.getElementById('btn-dl-logo').href = logoUrl;
+                    }
+                }
+            } catch(e) { console.log("Logo fetch failed", e); }
+        }
+
+        function copyAllTags() {
+            const text = document.getElementById('hidden-tags-text');
+            if(!text.value) return alert('No tags to copy');
+            text.select();
+            document.execCommand('copy');
+            alert('Tags copied to clipboard!');
+        }
+
+        function copyInput(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy');
+            alert('Copied!');
+        }
+
+        // FAQs
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            content.classList.toggle('hidden');
+            icon.classList.toggle('fa-chevron-up');
+            icon.classList.toggle('fa-chevron-down');
+        }
+
+        // Listen for Enter key
+        document.getElementById('videoUrl').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                analyzeVideo();
+            }
+        });
+    </script>
+</body>
+</html>
