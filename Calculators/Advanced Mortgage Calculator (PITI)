@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Mortgage Calculator</title>
+    <!-- Load Poppins Font and Tailwind CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        /* Custom print styling to ensure results look clean when printed */
+        @media print {
+            body { background: white !important; }
+            #calculator-container { box-shadow: none !important; margin: 0; padding: 0; }
+            .print-hidden { display: none !important; }
+            .amortization-table { font-size: 8px; } /* Smaller font for print density */
+            h1 { font-size: 24pt !important; }
+            .result-card h2 { font-size: 14pt !important; }
+            .chart-container { page-break-inside: avoid; }
+        }
+        /* Style for interactive buttons */
+        #print-button:active, #calculate-button:active {
+            transform: translateY(1px);
+        }
+        /* Custom scrollbar for amortization schedule */
+        #amortization-output {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #a0a0a0 #f0f0f0;
+        }
+        #amortization-output::-webkit-scrollbar { width: 8px; }
+        #amortization-output::-webkit-scrollbar-thumb { background-color: #a0aa90; border-radius: 4px; }
+        
+        /* Ensure table content wraps gracefully */
+        .amortization-table td {
+            white-space: nowrap; /* Prevent numbers from breaking lines */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Using Poppins as requested
+                        sans: ['Poppins', 'sans-serif'], 
+                    },
+                }
+            }
+        }
+
+        // --- GLOBAL VARIABLES & UTILITIES ---
+        let interestPrincipalChart;
+        let balanceChart;
+        
+        /**
+         * Formats a number as USD currency string.
+         * @param {number} value 
+         * @returns {string} Formatted currency string.
+         */
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(value);
+        };
+
+        /**
+         * Aggregates monthly amortization data into yearly summaries for charting.
+         * @param {Array<Object>} amortization - Array of monthly payment details.
+         * @returns {Array<Object>} Array of yearly summary objects.
+         */
+        function aggregateYearly(amortization) {
+            const yearlyData = [];
+            let year = 1;
+            let interestSum = 0;
+            let principalSum = 0;
+
+            for (let i = 0; i < amortization.length; i++) {
+                const item = amortization[i];
+                interestSum += item.interest;
+                principalSum += item.principal;
+                
+                // Aggregate every 12 months or on the final payment
+                if (item.month % 12 === 0 || i === amortization.length - 1) {
+                    yearlyData.push({
+                        year: year,
+                        interest: interestSum,
+                        principal: principalSum,
+                        endBalance: item.end_balance
+                    });
+                    // Reset for next year
+                    year++;
+                    interestSum = 0;
+                    principalSum = 0;
+                }
+            }
+            return yearlyData;
+        }
+
+        /**
+         * Initializes and renders Chart.js graphs using yearly aggregated data.
+         * @param {Array<Object>} yearlyData - Yearly mortgage data.
+         * @param {boolean} extraPaymentApplied - Flag if extra payments were used.
+         */
+        function renderCharts(yearlyData, extraPaymentApplied) {
+            const years = yearlyData.map(d => `Year ${d.year}`);
+            const interestData = yearlyData.map(d => d.interest);
+            const principalData = yearlyData.map(d => d.principal);
+            const balanceData = yearlyData.map(d => d.endBalance);
+
+            // Destroy existing charts to prevent memory leaks and stacking
+            if (interestPrincipalChart) interestPrincipalChart.destroy();
+            if (balanceChart) balanceChart.destroy();
+
+            // Helper for currency formatting in chart tooltips/labels
+            const currencyFormatter = (value) => formatCurrency(value).slice(0, -3);
+
+            // --- Chart 1: Principal vs. Interest Paid Over Time (Stacked Bar) ---
+            const ctx1 = document.getElementById('interestPrincipalChart').getContext('2d');
+            interestPrincipalChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Principal Paid',
+                            data: principalData,
+                            backgroundColor: '#4c51bf', // Indigo 700
+                            stack: 'Stack 0',
+                        },
+                        {
+                            label: 'Interest Paid',
+                            data: interestData,
+                            backgroundColor: '#ef4444', // Red 500
+                            stack: 'Stack 0',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Yearly Principal and Interest Payment Breakdown',
+                            font: { size: 16, family: 'Poppins' }
+                        },
+                        legend: { position: 'bottom', labels: { font: { family: 'Poppins' } } },
+                        tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}` } }
+                    },
+                    scales: {
+                        x: { stacked: true, title: { display: true, text: 'Year', font: { family: 'Poppins' } } },
+                        y: { 
+                            stacked: true, 
+                            title: { display: true, text: 'Amount Paid ($)', font: { family: 'Poppins' } }, 
+                            beginAtZero: true,
+                            ticks: { callback: currencyFormatter, font: { family: 'Poppins' } }
+                        }
+                    }
+                }
+            });
+
+            // --- Chart 2: Remaining Loan Balance Over Time (Line) ---
+            const ctx2 = document.getElementById('balanceChart').getContext('2d');
+            balanceChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Remaining Balance',
+                        data: balanceData,
+                        fill: true,
+                        backgroundColor: 'rgba(56, 189, 248, 0.2)', // Sky 400 with opacity
+                        borderColor: '#06b6d4', // Cyan 500
+                        tension: 0.3,
+                        pointRadius: extraPaymentApplied ? 4 : 2,
+                        pointBackgroundColor: extraPaymentApplied ? '#f59e0b' : '#06b6d4'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Loan Balance Trend${extraPaymentApplied ? ' (Accelerated Payoff)' : ''}`,
+                            font: { size: 16, family: 'Poppins' }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Year', font: { family: 'Poppins' } } },
+                        y: { 
+                            title: { display: true, text: 'Balance ($)', font: { family: 'Poppins' } }, 
+                            beginAtZero: false,
+                            ticks: { callback: currencyFormatter, font: { family: 'Poppins' } }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // --- CORE MORTGAGE CALCULATION LOGIC ---
+        function calculateMortgage() {
+            // Retrieve and parse inputs
+            const P = parseFloat(document.getElementById('principal').value);
+            const r_annual = parseFloat(document.getElementById('rate').value) / 100;
+            const n_years = parseFloat(document.getElementById('term').value);
+            const extra_payment = parseFloat(document.getElementById('extra-payment').value) || 0;
+            
+            // PITI Inputs
+            const annual_tax = parseFloat(document.getElementById('tax').value) || 0;
+            const annual_insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const monthly_pmi = parseFloat(document.getElementById('pmi').value) || 0;
+            
+            // Derived variables
+            const r_monthly = r_annual / 12;
+            const n_months = n_years * 12;
+
+            const resultsDiv = document.getElementById('results');
+            const amortizationTableBody = document.getElementById('amortization-table-body');
+            
+            resultsDiv.classList.remove('hidden');
+            amortizationTableBody.innerHTML = '';
+
+            // Input validation
+            if (isNaN(P) || isNaN(r_annual) || isNaN(n_years) || P <= 0 || r_annual < 0 || n_years <= 0) {
+                resultsDiv.innerHTML = '<p class="text-red-600 font-semibold p-4 bg-red-100 rounded-xl">Error: Please enter valid positive numeric values for Principal, Rate, and Term.</p>';
+                document.getElementById('amortization-section').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('amortization-section').classList.remove('hidden');
+
+            // Calculate Required P&I Payment (M)
+            let monthly_payment_pi = 0;
+            if (r_monthly > 0) {
+                monthly_payment_pi = P * (r_monthly * Math.pow((1 + r_monthly), n_months)) / (Math.pow((1 + r_monthly), n_months) - 1);
+            } else {
+                monthly_payment_pi = P / n_months; 
+            }
+            
+            // Calculate PITI components
+            const monthly_tax = annual_tax / 12;
+            const monthly_insurance = annual_insurance / 12;
+            const total_monthly_payment_piti = monthly_payment_pi + monthly_tax + monthly_insurance + monthly_pmi;
+
+            // --- Amortization Loop ---
+            let amortization = [];
+            let total_interest_paid = 0;
+            let total_principal_paid = 0;
+            let month = 0;
+            let current_P = P;
+            let loan_paid_off_months = n_months;
+
+            while (current_P > 0 && month < 3600) { 
+                month++;
+                const starting_balance = current_P;
+                const interest_payment = starting_balance * r_monthly;
+                let principal_payment_required = monthly_payment_pi - interest_payment;
+                
+                // Total principal applied (required + extra)
+                let total_principal_applied = principal_payment_required + extra_payment;
+
+                // Handle final payment
+                if (total_principal_applied >= starting_balance) {
+                    total_principal_applied = starting_balance;
+                    current_P = 0;
+                    loan_paid_off_months = month;
+                } else {
+                    current_P -= total_principal_applied;
+                }
+                
+                total_interest_paid += interest_payment;
+                total_principal_paid += total_principal_applied;
+
+                amortization.push({
+                    month: month,
+                    start_balance: starting_balance,
+                    interest: interest_payment,
+                    principal: total_principal_applied,
+                    end_balance: current_P
+                });
+
+                if (current_P <= 0) break;
+            }
+            
+            // Final Summary Calculations
+            const total_paid_pi = total_principal_paid + total_interest_paid;
+            const years_saved = n_years - (loan_paid_off_months / 12);
+            
+            // Calculate baseline interest for savings comparison
+            const total_interest_no_extra = monthly_payment_pi * n_months - P; 
+            const interest_saved = total_interest_no_extra - total_interest_paid;
+            
+            // --- Aggregate data for charts ---
+            const yearlyData = aggregateYearly(amortization);
+
+
+            // --- Render Amortization Table ---
+            let amortizationHTML = '';
+            amortization.forEach(item => {
+                const isFinal = item.end_balance <= 0 && item.month === loan_paid_off_months;
+
+                amortizationHTML += `
+                    <tr class="${isFinal ? 'bg-green-100 font-semibold' : 'hover:bg-gray-50'} border-b border-gray-100">
+                        <td class="p-2 text-center">${item.month}</td>
+                        <td class="p-2 text-right">${formatCurrency(item.start_balance)}</td>
+                        <td class="p-2 text-right text-red-600">${formatCurrency(item.interest)}</td>
+                        <td class="p-2 text-right text-green-600">${formatCurrency(item.principal)}</td>
+                        <td class="p-2 text-right">${formatCurrency(item.end_balance < 0 ? 0 : item.end_balance)}</td>
+                    </tr>
+                `;
+            });
+            amortizationTableBody.innerHTML = amortizationHTML;
+
+            // --- Summary Rendering ---
+            const totalMonthlyPITI = formatCurrency(total_monthly_payment_piti);
+            const monthlyPrincipalInterest = formatCurrency(monthly_payment_pi);
+            const totalInterest = formatCurrency(total_interest_paid);
+
+            const totalRatio = total_paid_pi > 0 ? total_paid_pi : 1;
+            const interestRatio = (total_interest_paid / totalRatio) * 100;
+            const principalRatio = (total_principal_paid / totalRatio) * 100;
+
+            let extraPaymentSummary = '';
+            const extraPaymentApplied = extra_payment > 0 && loan_paid_off_months < n_months;
+
+            if (extraPaymentApplied) {
+                 extraPaymentSummary = `
+                    <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                        <h3 class="text-lg font-bold text-yellow-800 mb-2">Impact of Extra Payments ($${extra_payment.toFixed(2)}/mo)</h3>
+                        <p>Loan Paid Off In: <span class="font-semibold text-yellow-700">${(loan_paid_off_months / 12).toFixed(1)} years</span> (${loan_paid_off_months} months)</p>
+                        <p>Time Saved: <span class="font-semibold text-green-700">${years_saved.toFixed(1)} years</span></p>
+                        <p>Interest Saved: <span class="font-semibold text-green-700">${formatCurrency(interest_saved)}</span></p>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Loan Summary</h2>
+
+                <!-- Key Metrics Card - Adjusted font sizes for small screens to prevent overflow -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                    <!-- Total PITI -->
+                    <div class="result-card p-4 bg-white shadow-lg rounded-xl border-l-4 border-teal-500 col-span-2">
+                        <p class="text-xs sm:text-sm text-gray-500">Total Monthly Payment (PITI)</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-teal-600 break-all">${totalMonthlyPITI}</p>
+                        <p class="text-xs text-gray-400">P&I + Tax + Ins + PMI (Full Payment)</p>
+                    </div>
+                    <!-- P&I Only -->
+                    <div class="result-card p-4 bg-white shadow-lg rounded-xl border-l-4 border-indigo-500">
+                        <p class="text-xs sm:text-sm text-gray-500">P&I Only</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-indigo-600 break-all">${monthlyPrincipalInterest}</p>
+                        <p class="text-xs text-gray-400">Used for Amortization</p>
+                    </div>
+                    <!-- Total Interest -->
+                    <div class="result-card p-4 bg-white shadow-lg rounded-xl border-l-4 border-red-500">
+                        <p class="text-xs sm:text-sm text-gray-500">Total Interest Paid</p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-red-600 break-all">${totalInterest}</p>
+                        <p class="text-xs text-gray-400">Over the life of the loan</p>
+                    </div>
+                </div>
+
+                <!-- PITI Breakdown -->
+                <div class="mt-4 p-4 bg-gray-100 rounded-xl shadow-inner">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Monthly PITI Breakdown</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div><span class="font-semibold text-indigo-600">P&I:</span> ${monthlyPrincipalInterest}</div>
+                        <div><span class="font-semibold text-gray-600">Tax:</span> ${formatCurrency(monthly_tax)}</div>
+                        <div><span class="font-semibold text-gray-600">Insurance:</span> ${formatCurrency(monthly_insurance)}</div>
+                        <div><span class="font-semibold text-gray-600">PMI:</span> ${formatCurrency(monthly_pmi)}</div>
+                    </div>
+                </div>
+
+                ${extraPaymentSummary}
+
+                <!-- Chart Containers - Ensure responsive flow (grid on small screens, single column on large) -->
+                <h2 class="text-2xl font-bold mt-10 mb-6 text-gray-800 border-t pt-4">Visual Analysis</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="chart-container bg-white p-4 rounded-xl shadow-lg border border-gray-100 h-96">
+                        <canvas id="interestPrincipalChart"></canvas>
+                    </div>
+                    <div class="chart-container bg-white p-4 rounded-xl shadow-lg border border-gray-100 h-96">
+                        <canvas id="balanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Principal vs Interest Visualization (retained as quick summary) -->
+                <h3 class="text-xl font-bold mt-4 mb-2 text-gray-700">P&I Cost Breakdown (Overall)</h3>
+                <div class="flex h-8 rounded-lg overflow-hidden shadow-inner mb-4">
+                    <div style="width: ${principalRatio.toFixed(2)}%;" class="bg-indigo-500 flex items-center justify-center transition-all duration-500">
+                        <span class="text-white text-xs font-bold p-1">${principalRatio.toFixed(1)}% Principal</span>
+                    </div>
+                    <div style="width: ${interestRatio.toFixed(2)}%;" class="bg-red-500 flex items-center justify-center transition-all duration-500">
+                        <span class="text-white text-xs font-bold p-1">${interestRatio.toFixed(1)}% Interest</span>
+                    </div>
+                </div>
+            `;
+            
+            // Render the charts after inserting the canvas elements
+            renderCharts(yearlyData, extraPaymentApplied);
+        }
+        
+        // --- INITIALIZATION AND EVENT LISTENERS ---
+        window.onload = function() {
+            // Set default values for demonstration
+            document.getElementById('principal').value = 300000;
+            document.getElementById('rate').value = 6.5;
+            document.getElementById('term').value = 30;
+            document.getElementById('extra-payment').value = 100;
+            document.getElementById('tax').value = 4000;
+            document.getElementById('insurance').value = 1200;
+            document.getElementById('pmi').value = 50; 
+
+            // Run initial calculation
+            calculateMortgage();
+
+            // Attach calculation to the button
+            document.getElementById('calculate-button').addEventListener('click', calculateMortgage);
+
+            // Attach event listener for Print button
+            document.getElementById('print-button').addEventListener('click', () => {
+                window.print();
+            });
+        };
+    </script>
+</head>
+<body class="bg-gray-50 font-sans p-4 sm:p-8">
+    
+    <div id="calculator-container" class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-2xl shadow-2xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 border-b pb-4">
+            Advanced Mortgage Calculator (PITI)
+        </h1>
+
+        <!-- Input Form - Highly responsive grid layout -->
+        <div id="calculator-form" class="print-hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+
+            <!-- Principal Input -->
+            <div class="col-span-1">
+                <label for="principal" class="block text-sm font-medium text-gray-700 mb-1">Loan Principal ($)</label>
+                <input type="number" id="principal" value="300000" min="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg shadow-sm" placeholder="e.g., 300000">
+            </div>
+
+            <!-- Annual Rate Input -->
+            <div class="col-span-1">
+                <label for="rate" class="block text-sm font-medium text-gray-700 mb-1">Annual Interest Rate (%)</label>
+                <input type="number" id="rate" value="6.5" min="0.01" step="0.01" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg shadow-sm" placeholder="e.g., 6.5">
+            </div>
+
+            <!-- Loan Term Input -->
+            <div class="col-span-1">
+                <label for="term" class="block text-sm font-medium text-gray-700 mb-1">Loan Term (Years)</label>
+                <input type="number" id="term" value="30" min="1" max="50" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg shadow-sm" placeholder="e.g., 30">
+            </div>
+            
+            <!-- Extra Payment Input (Advanced Feature) -->
+            <div class="col-span-1">
+                <label for="extra-payment" class="block text-sm font-medium text-gray-700 mb-1">Extra Monthly Principal Payment ($)</label>
+                <input type="number" id="extra-payment" value="100" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 text-lg shadow-sm" placeholder="e.g., 100">
+                <p class="text-xs text-gray-500 mt-1">Optional: Time/interest saved.</p>
+            </div>
+
+            <!-- Annual Tax Input -->
+            <div class="col-span-1">
+                <label for="tax" class="block text-sm font-medium text-gray-700 mb-1">Annual Property Tax ($)</label>
+                <input type="number" id="tax" value="4000" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-lg shadow-sm" placeholder="e.g., 4000">
+            </div>
+
+            <!-- Annual Insurance Input -->
+            <div class="col-span-1">
+                <label for="insurance" class="block text-sm font-medium text-gray-700 mb-1">Annual Home Insurance ($)</label>
+                <input type="number" id="insurance" value="1200" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-lg shadow-sm" placeholder="e.g., 1200">
+            </div>
+
+            <!-- Monthly PMI Input -->
+            <div class="col-span-1">
+                <label for="pmi" class="block text-sm font-medium text-gray-700 mb-1">Monthly PMI ($)</label>
+                <input type="number" id="pmi" value="50" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-lg shadow-sm" placeholder="e.g., 50">
+                <p class="text-xs text-gray-500 mt-1">Private Mortgage Insurance.</p>
+            </div>
+            
+            <!-- Empty column for spacing -->
+            <div class="col-span-1 sm:col-span-2"></div>
+
+
+            <!-- Action Buttons -->
+            <div class="col-span-full flex flex-col sm:flex-row justify-end gap-3 mb-4 mt-2">
+                <button id="calculate-button" class="flex items-center justify-center px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-lg hover:bg-teal-700 transition duration-150 ease-in-out">
+                    Calculate Results
+                </button>
+                <button id="print-button" class="flex items-center justify-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-150 ease-in-out mt-2 sm:mt-0">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m0 0v2a2 2 0 002 2h2a2 2 0 002-2v-2m0 0h-4"></path></svg>
+                    Print Results
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Output Area (Summary and Charts will be injected here) -->
+        <div id="results" class="hidden">
+            <!-- Content injected by JavaScript -->
+        </div>
+        
+        <!-- Amortization Schedule (Print hidden) -->
+        <div id="amortization-section" class="mt-8 print-hidden hidden">
+            <h3 class="text-xl font-bold mb-3 text-gray-700">Detailed Amortization Schedule (P&I Only)</h3>
+            <div id="amortization-output" class="rounded-xl shadow-lg border border-gray-200 bg-white overflow-x-auto">
+                <table class="w-full text-sm text-gray-600 amortization-table">
+                    <thead class="sticky top-0 bg-gray-100 text-gray-700 uppercase text-xs">
+                        <tr>
+                            <th scope="col" class="p-3 text-center">Month</th>
+                            <th scope="col" class="p-3 text-right">Start Balance</th>
+                            <th scope="col" class="p-3 text-right">Interest Paid</th>
+                            <th scope="col" class="p-3 text-right">P+E Paid</th>
+                            <th scope="col" class="p-3 text-right">End Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="amortization-table-body">
+                        <!-- Amortization rows inserted here by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Professional Footer -->
+        <div class="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-600 font-medium">
+            &copy; 2025 AskQuora.com. All rights reserved. | Provided for informational and educational purposes only.
+        </div>
+    </div>
+
+</body>
+</html>
