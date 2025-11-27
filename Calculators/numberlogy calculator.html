@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accurate Name Numerology Calculator for Success & Love</title>
+    <style>
+        .numerology-calculator {
+            max-width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: transparent;
+        }
+        
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 20px;
+            background: linear-gradient(135deg, rgba(106, 17, 203, 0.1) 0%, rgba(37, 117, 252, 0.1) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(106, 17, 203, 0.2);
+        }
+        
+        .calculator-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .calculator-header p {
+            font-size: 1.1rem;
+            color: #5a5a5a;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .calculator-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .input-group input:focus {
+            border-color: #6a11cb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 16px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+        
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .results-container.active {
+            opacity: 1;
+            max-height: 1000px;
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .result-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .number-circle {
+            display: inline-block;
+            width: 70px;
+            height: 70px;
+            line-height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .interpretation {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0,0,0,0.05);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .interpretation.active {
+            opacity: 1;
+            max-height: 1000px;
+        }
+        
+        .interpretation h3 {
+            color: #6a11cb;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .interpretation-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .interpretation-box {
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        
+        .interpretation-box h4 {
+            color: #2575fc;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .interpretation-box h4 i {
+            margin-right: 8px;
+        }
+        
+        .calculation-steps {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0,0,0,0.05);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .calculation-steps.active {
+            opacity: 1;
+            max-height: 1000px;
+        }
+        
+        .calculation-steps h3 {
+            color: #6a11cb;
+            margin-bottom: 10px;
+        }
+        
+        .step {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .chart-container h3 {
+            color: #6a11cb;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .numerology-chart {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .chart-number {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #6a11cb;
+            margin-bottom: 5px;
+        }
+        
+        .chart-letters {
+            min-height: 60px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .benefits {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .benefits h3 {
+            color: #6a11cb;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .benefit-item {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .benefit-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #2575fc;
+        }
+        
+        .benefit-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .numerology-chart {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .calculator-header h2 {
+                font-size: 1.7rem;
+            }
+            
+            .interpretation-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .numerology-chart {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="numerology-calculator">
+        <div class="calculator-header">
+            <h2>Accurate Name Numerology Calculator for Success & Love</h2>
+            <p>Discover your destiny number and unlock insights about your career success, relationships, and life path</p>
+        </div>
+        
+        <div class="calculator-card">
+            <div class="input-group">
+                <label for="name-input">Enter Your Full Name:</label>
+                <input type="text" id="name-input" placeholder="e.g., Emily Johnson">
+            </div>
+            
+            <button class="calculate-btn" id="calculate-btn">Calculate My Numerology</button>
+            
+            <div class="results-container" id="results-container">
+                <div class="result-card">
+                    <h3>Destiny Number</h3>
+                    <div class="number-circle" id="destiny-number">-</div>
+                    <p>Your life's purpose and path</p>
+                </div>
+                
+                <div class="result-card">
+                    <h3>Soul Urge Number</h3>
+                    <div class="number-circle" id="soul-urge-number">-</div>
+                    <p>Your inner desires and motivations</p>
+                </div>
+                
+                <div class="result-card">
+                    <h3>Personality Number</h3>
+                    <div class="number-circle" id="personality-number">-</div>
+                    <p>How others perceive you</p>
+                </div>
+            </div>
+            
+            <div class="interpretation" id="interpretation">
+                <h3>What Your Numbers Mean For You</h3>
+                <div class="interpretation-content" id="interpretation-content">
+                    <!-- Interpretation content will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="calculation-steps" id="calculation-steps">
+                <h3>How We Calculated Your Numbers</h3>
+                <div id="steps-content">
+                    <!-- Calculation steps will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Chaldean Numerology Chart</h3>
+            <div class="numerology-chart">
+                <div>
+                    <div class="chart-number">1</div>
+                    <div class="chart-letters">A, I, J, Q, Y</div>
+                </div>
+                <div>
+                    <div class="chart-number">2</div>
+                    <div class="chart-letters">B, K, R</div>
+                </div>
+                <div>
+                    <div class="chart-number">3</div>
+                    <div class="chart-letters">C, G, L, S</div>
+                </div>
+                <div>
+                    <div class="chart-number">4</div>
+                    <div class="chart-letters">D, M, T</div>
+                </div>
+                <div>
+                    <div class="chart-number">5</div>
+                    <div class="chart-letters">E, H, N, X</div>
+                </div>
+                <div>
+                    <div class="chart-number">6</div>
+                    <div class="chart-letters">U, V, W</div>
+                </div>
+                <div>
+                    <div class="chart-number">7</div>
+                    <div class="chart-letters">O, Z</div>
+                </div>
+                <div>
+                    <div class="chart-number">8</div>
+                    <div class="chart-letters">F, P</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="benefits">
+            <h3>How Numerology Can Help You</h3>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">💼</div>
+                    <h4>Career Success</h4>
+                    <p>Discover your natural talents and ideal career path</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">❤️</div>
+                    <h4>Love & Relationships</h4>
+                    <p>Understand your relationship patterns and find compatibility</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <h4>Life Purpose</h4>
+                    <p>Uncover your true life mission and personal growth opportunities</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🌟</div>
+                    <h4>Personal Growth</h4>
+                    <p>Identify areas for development and self-improvement</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculateBtn = document.getElementById('calculate-btn');
+            const nameInput = document.getElementById('name-input');
+            const resultsContainer = document.getElementById('results-container');
+            const interpretation = document.getElementById('interpretation');
+            const interpretationContent = document.getElementById('interpretation-content');
+            const calculationSteps = document.getElementById('calculation-steps');
+            const destinyNumber = document.getElementById('destiny-number');
+            const soulUrgeNumber = document.getElementById('soul-urge-number');
+            const personalityNumber = document.getElementById('personality-number');
+            const stepsContent = document.getElementById('steps-content');
+            
+            // Chaldean numerology chart (1-8 only, 9 is omitted)
+            const chaldeanChart = {
+                'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 8,
+                'G': 3, 'H': 5, 'I': 1, 'J': 1, 'K': 2, 'L': 3,
+                'M': 4, 'N': 5, 'O': 7, 'P': 8, 'Q': 1, 'R': 2,
+                'S': 3, 'T': 4, 'U': 6, 'V': 6, 'W': 6, 'X': 5,
+                'Y': 1, 'Z': 7
+            };
+            
+            // Vowels in the Chaldean system
+            const vowels = ['A', 'E', 'I', 'O', 'U'];
+            
+            // Numerology interpretations for success and love
+            const interpretations = {
+                1: {
+                    success: "You're a natural leader with strong ambition. Your career thrives when you take initiative and work independently. Entrepreneurship or management roles suit you well.",
+                    love: "You seek a partner who respects your independence. In relationships, you value honesty and direct communication. You're attracted to confident individuals.",
+                    life: "Your life path is about developing self-reliance and leadership qualities. You're here to learn how to balance independence with connection."
+                },
+                2: {
+                    success: "You excel in collaborative environments and diplomatic roles. Your strengths lie in mediation, customer service, and team coordination.",
+                    love: "You crave harmony and emotional connection in relationships. You're a supportive partner who values compromise and mutual understanding.",
+                    life: "Your journey is about learning cooperation and developing your intuitive abilities. Balance is key to your personal growth."
+                },
+                3: {
+                    success: "Your creativity and communication skills are your greatest assets. Careers in arts, writing, teaching, or entertainment align with your talents.",
+                    love: "You bring joy and optimism to relationships. You need a partner who appreciates your expressive nature and social energy.",
+                    life: "Your purpose involves self-expression and sharing your creative gifts. Learning to focus your many talents is part of your growth."
+                },
+                4: {
+                    success: "You thrive in structured environments with clear systems. Your reliability makes you excellent in finance, engineering, or project management.",
+                    love: "You value stability and loyalty in relationships. You're a practical partner who builds secure foundations for your loved ones.",
+                    life: "Your path is about creating stability and learning the value of patience and perseverance through hard work."
+                },
+                5: {
+                    success: "You excel in dynamic, changing environments. Careers in sales, marketing, travel, or communications suit your adaptable nature.",
+                    love: "You need freedom and variety in relationships. You're attracted to partners who share your love for adventure and new experiences.",
+                    life: "Your journey involves learning to embrace change while maintaining your center. Balancing freedom with responsibility is key."
+                },
+                6: {
+                    success: "You shine in nurturing roles. Careers in teaching, counseling, healthcare, or design allow you to express your caring nature.",
+                    love: "You're a devoted partner who creates warm, harmonious relationships. You seek to build a beautiful home and family life.",
+                    life: "Your purpose involves service to others and creating harmony. Learning to balance care for others with self-care is essential."
+                },
+                7: {
+                    success: "You excel in analytical and research-oriented fields. Science, technology, investigation, or spiritual guidance suit your introspective nature.",
+                    love: "You seek deep, meaningful connections with partners who respect your need for solitude and intellectual stimulation.",
+                    life: "Your path is about seeking truth and developing your intuition. Learning to trust your inner wisdom is central to your growth."
+                },
+                8: {
+                    success: "You're a natural in business and leadership roles. Your ambition and organizational skills make you successful in executive positions.",
+                    love: "You're attracted to successful, ambitious partners. You value stability and are generous with those you love.",
+                    life: "Your journey involves mastering the material world and learning to use power and resources wisely for the benefit of all."
+                },
+                9: {
+                    success: "You thrive in humanitarian roles. Your compassion serves you well in healing arts, philanthropy, or global initiatives.",
+                    love: "You seek relationships with depth and meaning. You're a compassionate partner who values emotional and spiritual connection.",
+                    life: "Your purpose involves universal love and service to humanity. Learning to let go and forgive is central to your growth."
+                },
+                11: {
+                    success: "You're here to inspire others with your vision. Your intuitive insights make you excellent in counseling, teaching, or spiritual leadership.",
+                    love: "You seek soul-level connections in relationships. Your sensitivity requires a partner who understands your deep emotional nature.",
+                    life: "As a master number, your path involves spiritual awakening and serving as a guiding light for others through your intuition."
+                },
+                22: {
+                    success: "You have the potential to manifest grand visions into reality. Your organizational genius serves large-scale projects and enterprises.",
+                    love: "You seek a partnership that can withstand the tests of time and build something lasting together.",
+                    life: "As a master builder, your purpose involves turning dreams into tangible reality that benefits many people."
+                },
+                33: {
+                    success: "You're here to uplift humanity through compassion. Your healing energy serves well in teaching, counseling, or artistic expression.",
+                    love: "Your relationships are based on unconditional love and service. You naturally nurture and support your partner.",
+                    life: "As a master teacher, your path involves selfless service and inspiring others through your compassion and wisdom."
+                }
+            };
+            
+            calculateBtn.addEventListener('click', function() {
+                const name = nameInput.value.trim().toUpperCase();
+                
+                if (name === '') {
+                    alert('Please enter your name to calculate your numerology');
+                    return;
+                }
+                
+                // Calculate all numerology numbers
+                const { destiny, soulUrge, personality, steps } = calculateNumerology(name);
+                
+                // Update the UI with results
+                destinyNumber.textContent = destiny.finalNumber;
+                soulUrgeNumber.textContent = soulUrge.finalNumber;
+                personalityNumber.textContent = personality.finalNumber;
+                
+                // Display interpretation
+                interpretationContent.innerHTML = '';
+                const destinyNum = destiny.finalNumber;
+                const soulUrgeNum = soulUrge.finalNumber;
+                
+                if (interpretations[destinyNum]) {
+                    interpretationContent.innerHTML = `
+                        <div class="interpretation-box">
+                            <h4>💼 Career & Success</h4>
+                            <p>${interpretations[destinyNum].success}</p>
+                        </div>
+                        <div class="interpretation-box">
+                            <h4>❤️ Love & Relationships</h4>
+                            <p>${interpretations[destinyNum].love}</p>
+                        </div>
+                        <div class="interpretation-box">
+                            <h4>🌟 Life Path & Purpose</h4>
+                            <p>${interpretations[destinyNum].life}</p>
+                        </div>
+                    `;
+                }
+                
+                // Display calculation steps
+                stepsContent.innerHTML = '';
+                steps.forEach(step => {
+                    const stepElement = document.createElement('div');
+                    stepElement.className = 'step';
+                    stepElement.textContent = step;
+                    stepsContent.appendChild(stepElement);
+                });
+                
+                // Show result sections with animation
+                resultsContainer.classList.add('active');
+                interpretation.classList.add('active');
+                calculationSteps.classList.add('active');
+                
+                // Scroll to results
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+            
+            function calculateNumerology(name) {
+                const steps = [];
+                
+                // Remove spaces and non-alphabetic characters
+                const cleanName = name.replace(/[^A-Z]/g, '');
+                steps.push(`Name without spaces or special characters: ${cleanName}`);
+                
+                // Calculate Destiny Number (all letters)
+                let destinyTotal = 0;
+                let destinyLetters = [];
+                
+                for (let i = 0; i < cleanName.length; i++) {
+                    const letter = cleanName[i];
+                    const value = chaldeanChart[letter] || 0;
+                    destinyTotal += value;
+                    destinyLetters.push(`${letter}=${value}`);
+                }
+                
+                steps.push(`Destiny Number - Letters: ${destinyLetters.join(', ')}`);
+                steps.push(`Destiny Number - Total: ${destinyTotal}`);
+                
+                const destinyFinal = reduceToSingleDigit(destinyTotal);
+                steps.push(`Destiny Number - Final: ${destinyTotal} → ${destinyFinal}`);
+                
+                // Calculate Soul Urge Number (vowels only)
+                let soulUrgeTotal = 0;
+                let soulUrgeLetters = [];
+                let nameVowels = [];
+                
+                for (let i = 0; i < cleanName.length; i++) {
+                    const letter = cleanName[i];
+                    if (vowels.includes(letter)) {
+                        const value = chaldeanChart[letter] || 0;
+                        soulUrgeTotal += value;
+                        soulUrgeLetters.push(`${letter}=${value}`);
+                        nameVowels.push(letter);
+                    }
+                }
+                
+                steps.push(`Soul Urge Number - Vowels (${nameVowels.join(', ')}): ${soulUrgeLetters.join(', ')}`);
+                steps.push(`Soul Urge Number - Total: ${soulUrgeTotal}`);
+                
+                // Check for master numbers (11, 22, 33) before reducing
+                const soulUrgeFinal = (soulUrgeTotal === 11 || soulUrgeTotal === 22 || soulUrgeTotal === 33) ? 
+                    soulUrgeTotal : reduceToSingleDigit(soulUrgeTotal);
+                
+                if (soulUrgeTotal === 11 || soulUrgeTotal === 22 || soulUrgeTotal === 33) {
+                    steps.push(`Soul Urge Number - Master Number: ${soulUrgeTotal} (not reduced)`);
+                } else {
+                    steps.push(`Soul Urge Number - Final: ${soulUrgeTotal} → ${soulUrgeFinal}`);
+                }
+                
+                // Calculate Personality Number (consonants only)
+                let personalityTotal = 0;
+                let personalityLetters = [];
+                let nameConsonants = [];
+                
+                for (let i = 0; i < cleanName.length; i++) {
+                    const letter = cleanName[i];
+                    if (!vowels.includes(letter)) {
+                        const value = chaldeanChart[letter] || 0;
+                        personalityTotal += value;
+                        personalityLetters.push(`${letter}=${value}`);
+                        nameConsonants.push(letter);
+                    }
+                }
+                
+                steps.push(`Personality Number - Consonants (${nameConsonants.join(', ')}): ${personalityLetters.join(', ')}`);
+                steps.push(`Personality Number - Total: ${personalityTotal}`);
+                
+                const personalityFinal = reduceToSingleDigit(personalityTotal);
+                steps.push(`Personality Number - Final: ${personalityTotal} → ${personalityFinal}`);
+                
+                return {
+                    destiny: { finalNumber: destinyFinal },
+                    soulUrge: { finalNumber: soulUrgeFinal },
+                    personality: { finalNumber: personalityFinal },
+                    steps
+                };
+            }
+            
+            function reduceToSingleDigit(num) {
+                while (num > 9 && num !== 11 && num !== 22 && num !== 33) {
+                    let sum = 0;
+                    const digits = num.toString().split('');
+                    digits.forEach(digit => {
+                        sum += parseInt(digit);
+                    });
+                    num = sum;
+                }
+                return num;
+            }
+            
+            // Allow pressing Enter to calculate
+            nameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
