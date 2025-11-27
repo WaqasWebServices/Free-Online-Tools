@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zodiac Sign Compatibility Checker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .compatibility-tool {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .result-section {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(248, 249, 250, 0.9);
+        }
+        .compatibility-percentage {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .progress {
+            height: 20px;
+            margin: 15px 0;
+        }
+        .learn-more-section {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: rgba(233, 236, 239, 0.8);
+            border-radius: 10px;
+        }
+        .sign-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .compatibility-type {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        .compatibility-description {
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        .compatibility-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border: none;
+            padding: 10px 25px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a0db5 0%, #1c68e6 100%);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .compatibility-tool {
+                padding: 15px;
+            }
+            .compatibility-percentage {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="compatibility-tool">
+            <div class="compatibility-header text-center">
+                <h2>Zodiac Sign Compatibility Checker</h2>
+                <p class="mb-0">Discover how well your zodiac signs match in different aspects of life.</p>
+            </div>
+            
+            <form id="compatibilityForm">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label for="sign1" class="form-label">First Zodiac Sign</label>
+                        <select class="form-select" id="sign1" required>
+                            <option value="">Select a sign</option>
+                            <option value="aries">Aries (Mar 21 - Apr 19)</option>
+                            <option value="taurus">Taurus (Apr 20 - May 20)</option>
+                            <option value="gemini">Gemini (May 21 - Jun 20)</option>
+                            <option value="cancer">Cancer (Jun 21 - Jul 22)</option>
+                            <option value="leo">Leo (Jul 23 - Aug 22)</option>
+                            <option value="virgo">Virgo (Aug 23 - Sep 22)</option>
+                            <option value="libra">Libra (Sep 23 - Oct 22)</option>
+                            <option value="scorpio">Scorpio (Oct 23 - Nov 21)</option>
+                            <option value="sagittarius">Sagittarius (Nov 22 - Dec 21)</option>
+                            <option value="capricorn">Capricorn (Dec 22 - Jan 19)</option>
+                            <option value="aquarius">Aquarius (Jan 20 - Feb 18)</option>
+                            <option value="pisces">Pisces (Feb 19 - Mar 20)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                        <span class="fs-1">+</span>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <label for="sign2" class="form-label">Second Zodiac Sign</label>
+                        <select class="form-select" id="sign2" required>
+                            <option value="">Select a sign</option>
+                            <option value="aries">Aries (Mar 21 - Apr 19)</option>
+                            <option value="taurus">Taurus (Apr 20 - May 20)</option>
+                            <option value="gemini">Gemini (May 21 - Jun 20)</option>
+                            <option value="cancer">Cancer (Jun 21 - Jul 22)</option>
+                            <option value="leo">Leo (Jul 23 - Aug 22)</option>
+                            <option value="virgo">Virgo (Aug 23 - Sep 22)</option>
+                            <option value="libra">Libra (Sep 23 - Oct 22)</option>
+                            <option value="scorpio">Scorpio (Oct 23 - Nov 21)</option>
+                            <option value="sagittarius">Sagittarius (Nov 22 - Dec 21)</option>
+                            <option value="capricorn">Capricorn (Dec 22 - Jan 19)</option>
+                            <option value="aquarius">Aquarius (Jan 20 - Feb 18)</option>
+                            <option value="pisces">Pisces (Feb 19 - Mar 20)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="compatibilityType" class="form-label">Type of Compatibility</label>
+                        <select class="form-select" id="compatibilityType" required>
+                            <option value="">Select compatibility type</option>
+                            <option value="love">Love</option>
+                            <option value="marriage">Marriage</option>
+                            <option value="emotional">Emotional</option>
+                            <option value="sex">Sex</option>
+                            <option value="business">Business</option>
+                            <option value="friendship">Friendship</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Check Compatibility</button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="result-section" id="resultSection">
+                <div class="row text-center mb-4">
+                    <div class="col-md-5">
+                        <div class="sign-icon" id="sign1Icon"></div>
+                        <h4 id="sign1Name"></h4>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+                        <span class="fs-1">+</span>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="sign-icon" id="sign2Icon"></div>
+                        <h4 id="sign2Name"></h4>
+                    </div>
+                </div>
+                
+                <h4 class="text-center compatibility-type" id="compatibilityTypeText"></h4>
+                
+                <div class="compatibility-percentage" id="compatibilityPercentage"></div>
+                
+                <div class="progress">
+                    <div id="compatibilityBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                
+                <div id="compatibilityDescription" class="mt-3 compatibility-description"></div>
+                
+                <div class="learn-more-section">
+                    <h5>Learn More About These Signs</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-6 text-center mb-2">
+                            <a id="sign1Link" href="#" class="btn btn-outline-primary">Learn About <span id="sign1LinkText"></span></a>
+                        </div>
+                        <div class="col-md-6 text-center mb-2">
+                            <a id="sign2Link" href="#" class="btn btn-outline-primary">Learn About <span id="sign2LinkText"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('compatibilityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const sign1 = document.getElementById('sign1').value;
+            const sign2 = document.getElementById('sign2').value;
+            const compatibilityType = document.getElementById('compatibilityType').value;
+            
+            if (!sign1 || !sign2 || !compatibilityType) {
+                alert('Please select both zodiac signs and a compatibility type.');
+                return;
+            }
+            
+            // Generate compatibility data
+            const compatibilityData = generateCompatibility(sign1, sign2, compatibilityType);
+            
+            // Update UI with results
+            document.getElementById('sign1Icon').textContent = getSignIcon(sign1);
+            document.getElementById('sign2Icon').textContent = getSignIcon(sign2);
+            document.getElementById('sign1Name').textContent = formatSignName(sign1);
+            document.getElementById('sign2Name').textContent = formatSignName(sign2);
+            document.getElementById('compatibilityTypeText').textContent = formatCompatibilityType(compatibilityType);
+            document.getElementById('compatibilityPercentage').textContent = compatibilityData.percentage + '%';
+            
+            // Set progress bar color based on percentage
+            const progressBar = document.getElementById('compatibilityBar');
+            progressBar.style.width = compatibilityData.percentage + '%';
+            if (compatibilityData.percentage >= 80) {
+                progressBar.className = 'progress-bar bg-success';
+            } else if (compatibilityData.percentage >= 60) {
+                progressBar.className = 'progress-bar bg-warning';
+            } else {
+                progressBar.className = 'progress-bar bg-danger';
+            }
+            
+            document.getElementById('compatibilityDescription').innerHTML = compatibilityData.description;
+            
+            // Update links
+            document.getElementById('sign1Link').href = `https://www.todayhoroscope.xyz/astrology/zodiac-signs/${sign1}`;
+            document.getElementById('sign2Link').href = `https://www.todayhoroscope.xyz/astrology/zodiac-signs/${sign2}`;
+            document.getElementById('sign1LinkText').textContent = formatSignName(sign1);
+            document.getElementById('sign2LinkText').textContent = formatSignName(sign2);
+            
+            // Show results
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        function formatSignName(sign) {
+            return sign.charAt(0).toUpperCase() + sign.slice(1);
+        }
+        
+        function formatCompatibilityType(type) {
+            return type.charAt(0).toUpperCase() + type.slice(1) + ' Compatibility';
+        }
+        
+        function getSignIcon(sign) {
+            const icons = {
+                aries: '♈',
+                taurus: '♉',
+                gemini: '♊',
+                cancer: '♋',
+                leo: '♌',
+                virgo: '♍',
+                libra: '♎',
+                scorpio: '♏',
+                sagittarius: '♐',
+                capricorn: '♑',
+                aquarius: '♒',
+                pisces: '♓'
+            };
+            return icons[sign] || '★';
+        }
+        
+        function generateCompatibility(sign1, sign2, type) {
+            // This is a simplified compatibility algorithm
+            // In a real implementation, you would use actual astrological data
+            
+            // Generate a "stable" random percentage based on the inputs
+            // This ensures the same combination always gives the same result
+            const seed = sign1 + sign2 + type;
+            let hash = 0;
+            for (let i = 0; i < seed.length; i++) {
+                hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+                hash = hash & hash;
+            }
+            const percentage = Math.abs(hash % 41) + 60; // Results between 60-100%
+            
+            // Generate detailed description based on percentage and type
+            const description = generateDetailedDescription(sign1, sign2, type, percentage);
+            
+            return {
+                percentage: percentage,
+                description: description
+            };
+        }
+        
+        function generateDetailedDescription(sign1, sign2, type, percentage) {
+            const sign1Name = formatSignName(sign1);
+            const sign2Name = formatSignName(sign2);
+            
+            let description = '';
+            
+            // Introduction based on compatibility type
+            description += `<p>When exploring the ${type} compatibility between ${sign1Name} and ${sign2Name}, we find a ${getCompatibilityLevel(percentage)} connection that ${getConnectionFeeling(percentage, type)}.</p>`;
+            
+            // Strengths section
+            description += `<h5>Strengths of This ${formatCompatibilityType(type)}</h5>`;
+            description += `<p>${getStrengths(sign1, sign2, type, percentage)}</p>`;
+            
+            // Challenges section
+            description += `<h5>Potential Challenges</h5>`;
+            description += `<p>${getChallenges(sign1, sign2, type, percentage)}</p>`;
+            
+            // Advice section
+            description += `<h5>Relationship Advice</h5>`;
+            description += `<p>${getAdvice(sign1, sign2, type, percentage)}</p>`;
+            
+            // Conclusion
+            description += `<p>${getConclusion(sign1, sign2, type, percentage)}</p>`;
+            
+            return description;
+        }
+        
+        function getCompatibilityLevel(percentage) {
+            if (percentage >= 90) return "highly favorable";
+            if (percentage >= 80) return "strong";
+            if (percentage >= 70) return "moderately positive";
+            if (percentage >= 60) return "challenging yet workable";
+            return "difficult";
+        }
+        
+        function getConnectionFeeling(percentage, type) {
+            const feelings = {
+                love: ["creates magical moments of intimacy and understanding", "fosters deep emotional bonds", "sparks romantic interest and affection"],
+                marriage: ["builds a stable foundation for lifelong partnership", "creates a balanced domestic life", "supports mutual growth and security"],
+                emotional: ["allows for deep vulnerability and support", "creates a safe space for sharing feelings", "fosters empathetic understanding"],
+                sex: ["ignites passionate and fulfilling intimacy", "creates exciting physical chemistry", "builds sensual connection and exploration"],
+                business: ["forms a productive and complementary partnership", "creates innovative solutions together", "builds a successful professional dynamic"],
+                friendship: ["creates lasting bonds of loyalty and fun", "fosters mutual support and understanding", "builds a foundation of trust and shared experiences"]
+            };
+            
+            const typeFeelings = feelings[type] || ["creates a meaningful connection"];
+            const index = percentage % typeFeelings.length;
+            return typeFeelings[index];
+        }
+        
+        function getStrengths(sign1, sign2, type, percentage) {
+            const strengths = {
+                love: [
+                    `The romantic connection between ${formatSignName(sign1)} and ${formatSignName(sign2)} is marked by genuine affection and mutual admiration. Their differences create an exciting dynamic that keeps the relationship fresh and engaging.`,
+                    `${formatSignName(sign1)} and ${formatSignName(sign2)} share a deep emotional understanding that forms the foundation of their loving bond. They naturally support each other's dreams and create a safe space for vulnerability.`,
+                    `What makes this love match special is how ${formatSignName(sign1)} and ${formatSignName(sign2)} balance each other perfectly. Their relationship is a beautiful dance of giving and receiving that nurtures both partners.`
+                ],
+                marriage: [
+                    `As marriage partners, ${formatSignName(sign1)} and ${formatSignName(sign2)} create a stable home environment where both feel secure and valued. They approach challenges as a team rather than individuals.`,
+                    `The marital bond between ${formatSignName(sign1)} and ${formatSignName(sign2)} is strengthened by shared values and complementary approaches to family life. They grow together while respecting each other's individuality.`,
+                    `This marriage benefits from how ${formatSignName(sign1)} and ${formatSignName(sign2)} naturally divide responsibilities according to their strengths. Their partnership becomes a sanctuary from the outside world.`
+                ],
+                emotional: [
+                    `Emotionally, ${formatSignName(sign1)} and ${formatSignName(sign2)} create a safe harbor for each other's feelings. They have an almost psychic understanding of what the other needs during difficult times.`,
+                    `The emotional connection between these signs allows for complete authenticity. ${formatSignName(sign1)} and ${formatSignName(sign2)} can share their deepest fears and brightest hopes without judgment.`,
+                    `What makes their emotional bond special is how they complement each other's emotional needs. When one is weak, the other is strong, creating a perfect balance of support.`
+                ],
+                sex: [
+                    `The sexual chemistry between ${formatSignName(sign1)} and ${formatSignName(sign2)} is electric yet deeply intimate. They explore physical connection with curiosity and mutual respect.`,
+                    `In the bedroom, ${formatSignName(sign1)} and ${formatSignName(sign2)} create a space of complete trust where fantasies can be safely explored. Their physical connection strengthens their emotional bond.`,
+                    `The intimacy between these signs goes beyond physical pleasure to soulful connection. They understand each other's desires intuitively and prioritize mutual satisfaction.`
+                ],
+                business: [
+                    `Professionally, ${formatSignName(sign1)} and ${formatSignName(sign2)} form a powerhouse team. Their different approaches to problem-solving create innovative solutions that neither could develop alone.`,
+                    `The business partnership between these signs thrives on mutual respect for each other's expertise. ${formatSignName(sign1)} and ${formatSignName(sign2)} cover each other's weaknesses while amplifying strengths.`,
+                    `What makes this professional match successful is how they balance risk-taking with practical planning. Together, they navigate challenges with wisdom and creativity.`
+                ],
+                friendship: [
+                    `As friends, ${formatSignName(sign1)} and ${formatSignName(sign2)} create memories that last a lifetime. They accept each other completely and provide unwavering support through all of life's ups and downs.`,
+                    `The friendship between these signs is built on genuine care and shared interests. ${formatSignName(sign1)} and ${formatSignName(sign2)} bring out the best in each other and celebrate each other's successes.`,
+                    `What makes their bond special is how they can be completely themselves around each other. This friendship provides a refuge from the pressures of the world.`
+                ]
+            };
+            
+            const typeStrengths = strengths[type] || [`The connection between ${formatSignName(sign1)} and ${formatSignName(sign2)} has many positive qualities that create a meaningful relationship.`];
+            const index = percentage % typeStrengths.length;
+            return typeStrengths[index];
+        }
+        
+        function getChallenges(sign1, sign2, type, percentage) {
+            // Simplified challenge descriptions - in a real tool, these would be more specific
+            const challenges = {
+                high: `While ${formatSignName(sign1)} and ${formatSignName(sign2)} have excellent compatibility, they may occasionally face minor misunderstandings due to their different communication styles. The key is to approach these moments with patience and a willingness to understand each other's perspective.`,
+                medium: `${formatSignName(sign1)} and ${formatSignName(sign2)} will need to consciously work through some fundamental differences in how they approach ${type}. These challenges aren't deal-breakers but do require compromise and open communication to navigate successfully.`,
+                low: `This pairing faces significant challenges in ${type} compatibility that will test both signs. The differences between ${formatSignName(sign1)} and ${formatSignName(sign2)} are substantial and will require considerable effort, understanding, and compromise to overcome.`
+            };
+            
+            let challengeLevel = 'medium';
+            if (percentage >= 80) challengeLevel = 'high';
+            else if (percentage <= 65) challengeLevel = 'low';
+            
+            return challenges[challengeLevel];
+        }
+        
+        function getAdvice(sign1, sign2, type, percentage) {
+            const adviceTemplates = [
+                `For ${formatSignName(sign1)} and ${formatSignName(sign2)} to thrive in their ${type} relationship, they should focus on celebrating their differences rather than trying to change each other. Regular check-ins about needs and expectations will help maintain harmony.`,
+                `The key to success for ${formatSignName(sign1)} and ${formatSignName(sign2)} is finding balance. When one feels overwhelmed, the other should step up with support. Remember that compromise doesn't mean losing yourself—it means creating something new together.`,
+                `${formatSignName(sign1)} and ${formatSignName(sign2)} will find their ${type} connection deepens when they create rituals specific to their relationship. Whether it's a weekly date night or daily check-ins, these consistent practices build trust and intimacy over time.`
+            ];
+            
+            const index = percentage % adviceTemplates.length;
+            return adviceTemplates[index];
+        }
+        
+        function getConclusion(sign1, sign2, type, percentage) {
+            const sign1Name = formatSignName(sign1);
+            const sign2Name = formatSignName(sign2);
+            
+            if (percentage >= 85) {
+                return `In conclusion, the ${type} connection between ${sign1Name} and ${sign2Name} is truly special. With ${percentage}% compatibility, this relationship has excellent potential for growth, happiness, and mutual fulfillment. The stars align favorably for this pairing, suggesting a bond that can withstand challenges and grow stronger over time.`;
+            } else if (percentage >= 70) {
+                return `Overall, ${sign1Name} and ${sign2Name} share a ${type} compatibility of ${percentage}%, indicating a relationship with solid potential. While there are areas that require attention and compromise, the foundation is strong enough to build something meaningful and lasting.`;
+            } else {
+                return `With ${percentage}% compatibility, the ${type} relationship between ${sign1Name} and ${sign2Name} will require conscious effort from both parties. While challenges exist, they're not insurmountable. With patience, understanding, and willingness to grow together, this connection can still develop into something valuable.`;
+            }
+        }
+    </script>
+</body>
+</html>
